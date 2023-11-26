@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "yc",
+    "name": "your-confort",
     "slug": "yc",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,16 +15,32 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eduardo18xvlll.yc"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.eduardo18xvlll.yc"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "302c7c66-9ac2-4b88-8427-b98b4412454a"
+      }
     }
-  }
+  },
+  "plugins": [
+    [
+      "@stripe/stripe-react-native",
+      {
+        "merchantIdentifier": "",
+        "enableGooglePay": true
+      }
+    ]
+  ]
 }
