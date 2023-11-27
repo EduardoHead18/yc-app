@@ -1,5 +1,5 @@
-//const url = "https://your-confort-backend.onrender.com/api/v1/user"
-const url:string = 'https://your-confort-backend.onrender.com/api/v1/user'
+const url = "http://localhost:8080/api/v1/user"
+// const url:string = 'https://your-confort-backend.onrender.com/api/v1/user'
 export const createUser = async (data: object) => {
     console.log('from createUser', data)
     try {
@@ -11,10 +11,8 @@ export const createUser = async (data: object) => {
         body: JSON.stringify(data),
       });
       const responseJson = await response.json();
-      console.log('success', responseJson)
-      return 'success'
+      if(response.ok) return responseJson
     } catch (error : any) {
       console.error('by server', error)
-      
     }
   };

@@ -9,6 +9,7 @@ import {
   Keyboard,
   Platform,
   Image,
+  Alert,
 } from "react-native";
 import {
   GoogleSignin,
@@ -30,53 +31,98 @@ import { userLogin } from "../services/loginApi";
 import { MyContext } from "../context/MyContext";
 import { SaveTokenInStorage } from "../utils/saveTokenInStorage";
 import { MyContextType } from "../types/typesContext";
+import { createUser } from "../services/createUserApi";
 
 interface ILogin {
   email: string;
   password: string;
 }
+interface IUserInfo {
+  giveName?: string | null;
+  familyName?: string | null;
+  email?: string;
+  id: string;
+  name?: string | null;
+  photo?: string | null;
+}
 
 export const LoginGoogle = () => {
-  //navigation routes
+  const [userInfoState, setUserInfoState] = useState<Partial<IUserInfo>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formErrors, setFormErrors] = useState<string>();
+
   const { navigateToRecoverPassword, navigateToCreateAccount, navigateToTabs } =
     useStackNavigation();
 
-  //contexto
-
   GoogleSignin.configure({
-    scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
+    scopes: ["https://www.googleapis.com/auth/drive.readonly"],
     webClientId: WEB_CLIENT_ID,
     iosClientId: IOS_CLIENT_ID,
   });
 
-  const getUser = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(JSON.stringify(userInfo, null, 2));
-      navigateToTabs();
+  const addUserDataToApi = async (userInfo: Partial<IUserInfo>) => {
+    if (userInfo.email) {
+      const dataUser = {
+        name: userInfo.giveName || "",
+        lastName: userInfo.familyName || "",
+        email: userInfo.email,
+        city: "waiting",
+        state: "waiting",
+        address: "waiting",
+        postalCode: "waiting",
+        age: 10,
+        phone: "9292929299",
+        password: "waiting",
+        subscription: false,
+      };
 
-      console.log(userInfo);
-    } catch (error: any) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log(error.message);
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log(error.message);
-        // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log(error.message);
-        // play services not available or outdated
-      } else {
-        console.log("error", error);
+      try {
+        const response = await createUser(dataUser);
+        console.log('desde la api', response);
+        if (response) {
+          SaveTokenInStorage(response);
+          navigateToTabs();
+        }
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Algo salio mal :(')
       }
     }
   };
 
-  const [code, setCode] = useState<Number | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [formErrors, setFormErrors] = useState<string>();
-  const updateSateLogged = useContext(MyContext);
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log(JSON.stringify(userInfo, null, 2));
+      const userInformation: Partial<IUserInfo> = {
+        giveName: userInfo.user?.givenName,
+        familyName: userInfo.user?.familyName,
+        email: userInfo.user?.email,
+        id: userInfo.user?.id || "",
+        name: userInfo.user?.name,
+        photo: userInfo.user?.photo,
+      };
+
+      setUserInfoState(userInformation);
+      console.log('from user', userInformation)
+      await addUserDataToApi(userInformation);
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log(error.message);
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log(error.message);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log(error.message);
+      } else {
+        console.log("error", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const initialValues: ILogin = {
     email: "",
@@ -103,7 +149,7 @@ export const LoginGoogle = () => {
                       textAlign: "center",
                       width: windowWidth * 0.8,
                       height: windowHeight * 0.04,
-                      color:'red'
+                      color: "red",
                     },
                   ]
                 : {
@@ -155,9 +201,12 @@ export const LoginGoogle = () => {
             onSubmit={async (values) => {
               setIsLoading(true);
               const response = await userLogin(values.email, values.password);
-              console.log("ok", response);
-              if (response && response.message === "successful authentication") {
-                console.log('este es el token del home: ' + response)
+
+              if (
+                response &&
+                response.message === "successful authentication"
+              ) {
+                console.log("este es el token del home: " + response);
                 SaveTokenInStorage(response);
                 //save email in context
                 navigateToTabs();
@@ -215,7 +264,7 @@ export const LoginGoogle = () => {
 
                 <TouchableOpacity
                   style={styles.button2}
-                  onPress={() => getUser()}
+                  onPress={() => handleGoogleSignIn()}
                 >
                   <Image
                     style={{

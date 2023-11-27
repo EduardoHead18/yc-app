@@ -13,6 +13,8 @@ type StackParamList = {
   home: undefined;
   createPost: undefined;
   subscription: undefined;
+  checkScreen: undefined;
+  userScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<StackParamList>;
@@ -43,6 +45,8 @@ export const useStackNavigation = () => {
   const navigateToHome = () => navigation.navigate("home");
   const navigateToCreatePost = () => navigation.navigate("createPost");
   const navigateToSubscription = () => navigation.navigate("subscription");
+  const navigateToCheckScreen= () => navigation.navigate("checkScreen");
+  const navigateToUserScreen= () => navigation.navigate("userScreen");
 
   return {
     navigateToCreateAccount,
@@ -55,6 +59,8 @@ export const useStackNavigation = () => {
     navigateToTabs,
     navigateToHome,
     navigateToCreatePost,
-    navigateToSubscription
+    navigateToSubscription,
+    navigateToCheckScreen,
+    navigateToUserScreen
   };
 };

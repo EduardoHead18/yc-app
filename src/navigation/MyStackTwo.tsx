@@ -14,11 +14,11 @@ import { UserScreen } from "../screens/UserScreen";
 
 const Stack = createStackNavigator();
 
-export function MyStack() {
+export function MyStackTwo() {
   return (
     <>
       <Stack.Navigator
-        initialRouteName="loginGoogle"
+        initialRouteName="myTabs"
         screenOptions={{
           headerShown: false,
         }}

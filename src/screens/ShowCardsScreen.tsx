@@ -1,19 +1,48 @@
 import { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
 import { findOnePost } from "../services/findOnePost";
 import { allColors } from "../utils/colors";
 import { ButtonPrimaryComponent } from "../components/global/ButtonPrimaryComponent";
 import { windowHeight, windowWidth } from "../utils/dimensions";
-import { useStackNavigation } from "../hooks/useStackNavigation";
 import { useNavigation } from "@react-navigation/native";
+import MapView, { Marker } from "react-native-maps";
+import Geocoder from "react-native-geocoding";
+import { GOOGLE_MAPS_KEY } from "@env";
 
+interface ILocationData {
+  latitude: number;
+  longitude: number;
+  altitude: number | null;
+  accuracy: number | null;
+}
 
 export const ShowCards = ({ route }: any) => {
   const { postId } = route.params || {};
   const [data, setData] = useState<any>();
+  //google maps
+  const [coordinates, setCoordinates] = useState({
+    latitude: 16.9087258,
+    longitude:  -92.0943351,
+  });
+  const address = data ? `${data.location} ocosingo chiapas` : undefined;
+  const searchLocation = async () => {
+  Geocoder.init(GOOGLE_MAPS_KEY); 
+
+  try {
+    if (address) {
+      console.log(address)
+      const response = await Geocoder.from(address);
+      const { lat, lng } = response.results[0].geometry.location;
+      setCoordinates({ latitude: lat, longitude: lng });
+      console.log('maps response:', response);
+    }
+  } catch (error) {
+    console.error("Error searching location:", error);
+  }
+  };
 
   //navigation
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const findPost = async () => {
     try {
@@ -24,12 +53,11 @@ export const ShowCards = ({ route }: any) => {
     }
   };
 
-  console.log("de mi estado", data);
-
   useEffect(() => {
     findPost();
-    console.log("postId from showCards:", postId);
-  }, []);
+    searchLocation();
+
+  }, [address]);
 
   if (!data) {
     return (
@@ -49,26 +77,29 @@ export const ShowCards = ({ route }: any) => {
         }}
       >
         <View style={{ marginTop: windowHeight * 0.09 }}>
-          <ButtonPrimaryComponent text="< Atras" onPress={()=>navigation.goBack()}></ButtonPrimaryComponent>
+          <ButtonPrimaryComponent
+            text="< Atras"
+            onPress={() => navigation.goBack()}
+          ></ButtonPrimaryComponent>
         </View>
         <ScrollView
-        showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           style={{
             flex: 1,
             backgroundColor: allColors.backgroundGreenCards,
             paddingHorizontal: 9,
-            borderRadius:20,
-            marginTop:windowHeight*0.02
+            borderRadius: 20,
+            marginTop: windowHeight * 0.02,
           }}
         >
-          <View style={{ alignItems: "flex-start"}}></View>
+          <View style={{ alignItems: "flex-start" }}></View>
           <View style={{ marginTop: windowHeight * 0.03 }}>
             <ScrollView horizontal={true} showsVerticalScrollIndicator={false}>
               {data &&
                 data.url &&
                 data.url.map((imageUrl: string, index: number) => (
                   <View
-                    style={{ backgroundColor: "#D4D5D6", borderRadius: 20}}
+                    style={{ backgroundColor: "#D4D5D6", borderRadius: 20 }}
                     key={index}
                   >
                     <Image
@@ -84,34 +115,61 @@ export const ShowCards = ({ route }: any) => {
                   </View>
                 ))}
             </ScrollView>
-            <Text
+            <Text style={styles.title}>Descripcion:</Text>
+            <Text>{data.description}</Text>
+            <Text style={styles.title}>Ubicación: </Text>
+            <View
               style={{
-                fontSize: 20,
-                fontWeight: "500",
-                marginBottom: windowHeight * 0.02,
-                marginTop:windowHeight*0.02
+                flex: 1,
+                flexDirection: "row",
+                gap: 6,
+                marginBottom: windowHeight * 0.05,
               }}
             >
-              Descripcion:
-            </Text>
-            <Text>{data.description}</Text>
-            <View style={{ flex: 1, flexDirection: "row", gap:6 }}>
               <View
                 style={{
                   width: windowWidth * 0.5,
                   height: windowHeight * 0.2,
-                  backgroundColor: "red",
                 }}
-              ></View>
+              >
+                <MapView
+               
+                  style={{  flex: 1, borderRadius:20}}
+                  region={{
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
+                    latitudeDelta: 0.001,
+                    longitudeDelta: 0.001,
+                  }}
+                >
+                  <Marker
+                    coordinate={{
+                      latitude: coordinates.latitude,
+                      longitude: coordinates.longitude,
+                    }}
+                    title="Ubicación seleccionada"
+                    description={address}
+                  />
+                </MapView>
+              </View>
               <View
                 style={{
                   width: windowWidth * 0.5,
                   height: windowHeight * 0.2,
-                  backgroundColor: "blue",
                 }}
               >
                 <Text>{data.location}</Text>
-                <Text>{data.price} pesos al mes</Text>
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontWeight: "500",
+                    flexWrap: "nowrap",
+                    paddingHorizontal: 10,
+                    marginTop: windowHeight * 0.01,
+                  }}
+                >
+                  ${data.price} mxn al mes
+                </Text>
               </View>
             </View>
           </View>
@@ -120,3 +178,12 @@ export const ShowCards = ({ route }: any) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 20,
+    fontWeight: "500",
+    marginBottom: windowHeight * 0.02,
+    marginTop: windowHeight * 0.02,
+  },
+});

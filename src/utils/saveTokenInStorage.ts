@@ -1,14 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //function to save the token
-export const SaveTokenInStorage = async (token: string) => {
-    let thereIsToken = true;
-    try {
-      await AsyncStorage.setItem(
-        "my-token",
-        JSON.stringify({ token, tokenExisting: thereIsToken })
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+// function to save the token
+export const SaveTokenInStorage = async (userData:object) => {
+  try {
+    await AsyncStorage.setItem("my-storage", JSON.stringify( userData ));
+    console.log('Saved data')
+  } catch (error) {
+    console.error("Error saving data in storage:", error);
+  }
+};

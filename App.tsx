@@ -1,49 +1,38 @@
 import { StyleSheet, Text, View } from "react-native";
 import { StripeProvider } from "@stripe/stripe-react-native";
-import CheckoutScreen from "./src/screens/ScreenCheckout";
-import { useEffect } from "react";
+import CheckoutScreen from "./src/screens/stripe/CheckScreen";
+import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { MyStack } from "./src/navigation/MyStack";
+import { MyProvider } from "./src/context/MyContext";
+import { PUBLISHABLE_KEY } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MyStackTwo } from "./src/navigation/MyStackTwo";
+import { getUserInfo } from "./src/utils/getUserInfo";
 
 export default function App() {
-  const url: string = "http://localhost:8080/api/v1/post";
-  // const url: string =
-  //   "https://your-confort-backend.onrender.com/api/v1/recover_password";
-
-  const getPost = async () => {
-    try {
-      const response = await fetch(url);
-      const responseJson = await response.json();
-      console.log(responseJson);
-      return responseJson;
-    } catch (error) {
-      console.log("error al obtener la api", error);
-      return false;
-    }
+  const [storageExists, setStorageExists] = useState<boolean>(false);
+  const getStorage = async () => {
+    const storedData = await getUserInfo()
+    if (storedData) setStorageExists(true);
   };
 
   useEffect(() => {
-    getPost();
+    getStorage();
   }, []);
 
   return (
     <NavigationContainer>
-      <StripeProvider
-        publishableKey="pk_test_51NSYyJFddPsMo2Q26hYohOv9j7V1orPxcDiTaFWXS2h4n1aI8rF09ps1k6Mr1RImPkyrD3gko3rY87V4DWJY34L600QBNV3fTz"
-        urlScheme="com.eduardo18xvlll.yc" // required for 3D Secure and bank redirects
-      >
-        {/* <CheckoutScreen></CheckoutScreen> */}
-        <MyStack></MyStack>
-      </StripeProvider>
+      <MyProvider>
+        <StripeProvider
+          publishableKey={PUBLISHABLE_KEY}
+          urlScheme="com.eduardo18xvlll.yc" // required for 3D Secure and bank redirects
+        >
+          {/* <CheckoutScreen></CheckoutScreen> */}
+
+          {storageExists ? <MyStackTwo/> : <MyStack/>}
+        </StripeProvider>
+      </MyProvider>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
