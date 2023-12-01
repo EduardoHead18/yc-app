@@ -22,6 +22,7 @@ import { allColors } from "../utils/colors";
 import { Formik } from "formik";
 import { getUserInfo } from "../utils/getUserInfo";
 import { useNavigation } from "@react-navigation/native";
+import { SpinnerComponet } from "../components/global/SpinnerComponent";
 
 const cld = new Cloudinary({
   cloud: {
@@ -40,6 +41,8 @@ const options = {
 interface IPost {
   id_user: string;
   title: string;
+  email:string,
+  phone: string
   url: string;
   description: string;
   location: string;
@@ -50,6 +53,8 @@ export const TestUploadImages = () => {
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [urls, setUrls] = useState<string[]>();
   const [showError, setShowError] = useState<boolean>(false);
+  const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //navigation
   const navigation = useNavigation();
@@ -106,9 +111,9 @@ export const TestUploadImages = () => {
         });
       });
       const uploadedUrls: string[] = await Promise.all(uploadPromises);
-      if (successfulUploadCount === imageUris.length) {
-        Alert.alert("Éxito", "La publicación se subió");
-      }
+      // if (successfulUploadCount === imageUris.length) {
+      //   Alert.alert("La publicación se subió");
+      // }
       setUrls(uploadedUrls);
       console.log("todas las urls", uploadedUrls);
       return uploadedUrls;
@@ -198,64 +203,67 @@ export const TestUploadImages = () => {
           initialValues={initialValues}
           validate={async (values) => {
             const errors: Partial<IPost> = {};
-            // Validation input e imagenes
             // Verificar si hay imágenes seleccionadas
-            if (!imageUris || imageUris.length === 0) {
-              errors.url = "Selecciona al menos una imagen";
-            }
 
             if (!values.title || !values.description || !values.location) {
-              errors.title = "Campo requerido";
-              errors.description = "Campo requerido";
-              errors.location = "Campo requerido";
-            }
-
+              setShowErrorAlert(true);
+            } else setShowErrorAlert(false);
+            
             return errors;
           }}
           //send email to api
           onSubmit={async (values) => {
+            setIsLoading(true)
             try {
-              if (showError)
-                Alert.alert("Sin guardar", "Debes llenar los datos");
+              if (showErrorAlert){
+                Alert.alert("Debes llenar los campos");
+                setIsLoading(false)
+                return
+              }
+              if (!imageUris || imageUris.length === 0) {
+                Alert.alert("Debes seleccionar al menos una imagen.");
+                setIsLoading(false)
+                return; // Sale de la función si no hay imágenes
+              }
               const { title, description, location, price } = values;
               // Subir imágenes y obtener URLs
               const uploadedUrls = await handleImageUpload();
               //obtener el id del usuario
               const idUserFromStorage = await getUserInfo();
-              if (idUserFromStorage) {
-                const userId = idUserFromStorage._id;
-                // Resto del código...
-              } else {
-                console.error(
-                  "No se pudo obtener la información del usuario desde el almacenamiento."
-                );
-                // Maneja el escenario donde no se puede obtener la información del usuario.
-              }
-
+           
+            
               // objeto a enviar a la API
               const dataSend = {
                 id_user: idUserFromStorage._id,
                 title: title,
+                email:idUserFromStorage.email,
+                phone:idUserFromStorage.phone,
                 url: uploadedUrls, //vacia
                 description: description,
                 location: location,
                 price: price,
               };
               console.log("este es el data send", dataSend);
-
               const response = await createPostApi(dataSend);
-              console.log(
-                "respuesta para ver si se creo el post a la API",
-                response
-              );
+              navigation.goBack()
+
+              if (response && response.status === "success") {
+                setShowError(false); // No hay error, se creó el post
+              } else {
+                setShowError(true); // Hay un error al crear el post
+              }
+             Alert.alert("La publicación se subió");
+              
             } catch (error) {
               console.log("error", error);
               Alert.alert("Sin guardar", "Debes llenar los datos");
+              setIsLoading(false);
             }
           }}
         >
           {({ handleChange, handleBlur, handleSubmit }) => (
             <ScrollView showsVerticalScrollIndicator={false}>
+              
               <Text style={{ fontSize: 17, marginTop: windowHeight * 0.05 }}>
                 Titulo
               </Text>
@@ -302,6 +310,7 @@ export const TestUploadImages = () => {
               />
 
               <View style={{ marginBottom: windowHeight * 0.05 }}>
+              {isLoading ? <SpinnerComponet /> : ""}
                 <ButtonPrimaryComponent
                   text="subir post"
                   onPress={handleSubmit}

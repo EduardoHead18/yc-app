@@ -15,6 +15,10 @@ type StackParamList = {
   subscription: undefined;
   checkScreen: undefined;
   userScreen: undefined;
+  beforePostScreen: undefined;
+  updateAccount: undefined;
+  accountScreen: undefined;
+  updatePost: {postId: any};
 };
 
 type NavigationProps = StackNavigationProp<StackParamList>;
@@ -39,14 +43,21 @@ export const useStackNavigation = () => {
   };
   const navigateToLoginGoogle = () => navigation.navigate("loginGoogle");
   const navigateToTabs = () => navigation.navigate("myTabs");
+
   const navigateToTheShowCards = (postId: any) => {
     navigation.navigate("showCards", { postId });
   };
+
   const navigateToHome = () => navigation.navigate("home");
   const navigateToCreatePost = () => navigation.navigate("createPost");
   const navigateToSubscription = () => navigation.navigate("subscription");
   const navigateToCheckScreen= () => navigation.navigate("checkScreen");
   const navigateToUserScreen= () => navigation.navigate("userScreen");
+  const navigateToBeforePostScreen= () => navigation.navigate("beforePostScreen");
+  const navigateToUpdateAccount= () => navigation.navigate("updateAccount");
+  const navigateToAccountScreen= () => navigation.navigate("accountScreen");
+  const navigateToUpdatePost= (postId:any) => navigation.navigate("updatePost",{postId});
+
 
   return {
     navigateToCreateAccount,
@@ -61,6 +72,10 @@ export const useStackNavigation = () => {
     navigateToCreatePost,
     navigateToSubscription,
     navigateToCheckScreen,
-    navigateToUserScreen
+    navigateToUserScreen,
+    navigateToBeforePostScreen,
+    navigateToUpdateAccount,
+    navigateToAccountScreen,
+    navigateToUpdatePost
   };
 };

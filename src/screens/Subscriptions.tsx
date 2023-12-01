@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Button,
   Alert,
 } from "react-native";
 import { allColors } from "../utils/colors";
@@ -13,88 +12,121 @@ import { ButtonPrimaryComponent } from "../components/global/ButtonPrimaryCompon
 import { useNavigation } from "@react-navigation/native";
 import { useStackNavigation } from "../hooks/useStackNavigation";
 import { useEffect, useState } from "react";
-import { useStripe } from "@stripe/stripe-react-native";
+import { checkoutApi } from "../services/stripe/checkoutStripeApi";
+import { WebView } from "react-native-webview";
+import { getUserInfo } from "../utils/getUserInfo";
+import { createSubscriptionApi } from "../services/subscription/createSubscription";
+import { dateFormater } from "../utils/dateFormater";
 
 export const Subscriptions = () => {
+  const [productData, setProductData] = useState<any[]>();
+  const [webViewVisible, setWebViewVisible] = useState<boolean>(false);
+  const [urlRedirect, setUrlRedirect] = useState<string>("");
+  const [storageData, setStorageData] = useState<any>();
+  const [nickname, setNickname] = useState<string>("");
+  const [dateCreated, setDateCreated] = useState<any>()
+
   //navigation
   const navigation = useNavigation();
-  const { navigateToCheckScreen } = useStackNavigation();
+  const { navigateToCheckScreen, navigateToBeforePostScreen } =
+    useStackNavigation();
 
-  //payment Stripe
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const [loading, setLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-
-  const fetchPaymentSheetParams = async () => {
-    const response = await fetch(`http://localhost:8080/api/v1/payment-sheet`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const { paymentIntent, ephemeralKey, customer } = await response.json();
-
-    return {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-    };
+  const getUserInfoStorage = async () => {
+    const response = await getUserInfo();
+    setStorageData(response);
   };
 
-  const initializePaymentSheet = async () => {
-    return new Promise<void>(async (resolve) => {
-      try {
-        const { paymentIntent, ephemeralKey, customer } =
-          await fetchPaymentSheetParams();
+  const getStripeData = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/v1/payment/subscriptions"
+      );
+      const responseJson = await response.json();
+      setProductData(responseJson);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // console.log(storageData);
+  //redirect to the application
+  const handleWebViewNavigationStateChange = async (newNavState: any) => {
+    const { url } = newNavState;
 
-        const { error } = await initPaymentSheet({
-          merchantDisplayName: "Example, Inc.",
-          customerId: customer,
-          customerEphemeralKeySecret: ephemeralKey,
-          paymentIntentClientSecret: paymentIntent,
-          allowsDelayedPaymentMethods: true,
-          defaultBillingDetails: {
-            name: "Jane Doe",
-          },
-        });
+    if (url && url.startsWith("https://yc.com/payment-successful")) {
+      if (storageData && storageData._id) {
+        console.log("eset es el nick", nickname);
+        const fecha = dateFormater(dateCreated)
+        console.log('fecha', fecha);
+        const sendObject = {
+          id_user: storageData._id,
+          active: true,
+          creation_date_subscription:fecha,
+          type_subscription:nickname,
+        };
 
-        if (!error) {
-          setLoading(true);
-          setIsInitialized(true);
-          resolve(); // Resuelve la promesa cuando la inicialización está completa
-        }
-      } catch (error) {
-        console.log("Error initializing payment sheet:", error);
-        resolve(); // Resuelve la promesa incluso si hay un error
+        const responseSubscript = await createSubscriptionApi(sendObject);
+        console.log("subscription created", responseSubscript);
+        navigation.goBack();
+        setWebViewVisible(false);
+        Alert.alert(
+          `Gracias por tu suscripción ${storageData.name},`,
+          ` Disfruta de tus beneficios 😃`,
+          [{ text: "ok" }]
+        );
       }
-    });
+    }
+    if (url && url.startsWith("https://yc.com/payment-canceled")) {
+      navigation.goBack();
+    }
   };
-
-  // ...
 
   useEffect(() => {
-    const initialize = async () => {
-      await initializePaymentSheet();
-    };
-
-    initialize();
+    getUserInfoStorage();
+    getStripeData();
   }, []);
 
-  const openPaymentSheet = async () => {
-    if (!isInitialized) {
-      // Evita abrir la hoja de pago si no está inicializada
-      console.log("Payment sheet is not initialized yet");
-      return;
-    }
+  const checkoutStripe = async (data: any) => {
+    console.log("data..", data.created);
+    setDateCreated(data.created);
+    console.log("eset es el nick name 😄", data.nickname);
+    setNickname(data.nickname);
 
-    const { error } = await presentPaymentSheet();
-
-    if (error) {
-      console.log("Cancelled", error);
-    } else {
-      Alert.alert("Success", "Your order is confirmed!");
+    try {
+      const response = await checkoutApi(data.id);
+      console.log("aaa", response);
+      if (response && response.message.url) {
+        const paymentUrl = response.message.url;
+        setUrlRedirect(paymentUrl);
+        setWebViewVisible(true);
+      } else {
+        console.log("La respuesta o la propiedad url es undefined.");
+      }
+    } catch (error) {
+      console.log("Error al llamar a checkoutApi:", error);
     }
   };
+
+  if (webViewVisible) {
+    return (
+      <WebView
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: windowHeight * 0.05,
+        }}
+        source={{ uri: urlRedirect }}
+        onNavigationStateChange={handleWebViewNavigationStateChange}
+      />
+    );
+  }
+
+  if (!productData)
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Cargando...</Text>
+      </View>
+    );
 
   return (
     <View
@@ -123,29 +155,24 @@ export const Subscriptions = () => {
         <Text style={styles.supTitle}>
           • Sin ningún costo, encuentra tu cuarto de manera fácil.
         </Text>
-        <Text style={styles.supTitle}>• Anuncia hasta 5 cuartos.</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.containerCards}
-        onPress={openPaymentSheet}
-      >
-        <Text style={styles.title}>Avanzado</Text>
-        <Text style={styles.supTitle}>• $100 pesos mensuales.</Text>
-        <Text style={styles.supTitle}>• Anuncia hasta 10 cuartos.</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.containerCards}>
-        <Text style={styles.title}>Premium</Text>
-        <Text style={styles.supTitle}>• $150 pesos mensuales.</Text>
         <Text style={styles.supTitle}>• No se pueden anunciar cuartos.</Text>
       </TouchableOpacity>
+      {productData?.map((data: any) => {
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              checkoutStripe(data);
+            }}
+            key={data.id}
+            style={styles.containerCards}
+          >
+            <Text style={styles.title}>{data.product.name}</Text>
+            <Text style={styles.supTitle}>• ${data.unit_amount / 100} mxn</Text>
+            <Text style={styles.supTitle}>• {data.product.description}</Text>
+          </TouchableOpacity>
+        );
+      })}
 
-      <TouchableOpacity style={styles.containerCards}>
-        <Text style={styles.title}>Élite Plus</Text>
-        <Text style={styles.supTitle}>• $200 pesos mensuales.</Text>
-        <Text style={styles.supTitle}>• No se pueden anunciar cuartos.</Text>
-      </TouchableOpacity>
       <ButtonPrimaryComponent
         text={"Regresar"}
         onPress={() => navigation.goBack()}

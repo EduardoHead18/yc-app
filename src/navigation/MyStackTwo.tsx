@@ -11,6 +11,10 @@ import { TestUploadImages } from "../screens/TestUploadImages";
 import { Subscriptions } from "../screens/Subscriptions";
 import CheckoutScreen from "../screens/stripe/CheckScreen";
 import { UserScreen } from "../screens/UserScreen";
+import { BeforePostScreen } from "../screens/BeforePostScreen";
+import { UpdateAccount } from "../screens/UpdateAccount";
+import { AccountScreen } from "../screens/AccountScreen";
+import { UpdatePost } from "../screens/UpdatePost";
 
 const Stack = createStackNavigator();
 
@@ -37,12 +41,12 @@ export function MyStackTwo() {
         <Stack.Screen
           name="changePassword"
           component={ChangePassword}
-          options={{ gestureEnabled: false, animationEnabled: true }}
+          options={{ gestureEnabled: true, animationEnabled: true }}
         />
         <Stack.Screen
           name="loginGoogle"
           component={LoginGoogle}
-          options={{ gestureEnabled: false, animationEnabled: true }}
+          options={{ gestureEnabled: true, animationEnabled: true }}
         />
         <Stack.Screen
           name="myTabs"
@@ -78,6 +82,21 @@ export function MyStackTwo() {
         <Stack.Screen
           name="userScreen"
           component={UserScreen}
+          options={{ gestureEnabled: true, animationEnabled: true }}
+        />
+        <Stack.Screen
+          name="updateAccount"
+          component={UpdateAccount}
+          options={{ gestureEnabled: true, animationEnabled: true }}
+        />
+        <Stack.Screen
+          name="accountScreen"
+          component={AccountScreen}
+          options={{ gestureEnabled: true, animationEnabled: true }}
+        />
+        <Stack.Screen
+          name="updatePost"
+          component={UpdatePost}
           options={{ gestureEnabled: true, animationEnabled: true }}
         />
       </Stack.Navigator>

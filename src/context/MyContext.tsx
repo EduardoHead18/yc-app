@@ -13,6 +13,7 @@ export const MyProvider = ({ children }: IProps) => {
   const [emailLogin, setEmailLogin] = useState("");
   const [saveEmail, setSaveEmail] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [dataUser, setDataUser] = useState<any>()
 
   const updateLoggedInStatus = () => {
     setIsLoggedIn(true);
@@ -28,6 +29,7 @@ export const MyProvider = ({ children }: IProps) => {
   const updateEmailLogin = (newEmailLogin: string) => {
     setEmailLogin(newEmailLogin);
   };
+
   return (
     <MyContext.Provider
       value={{
@@ -39,6 +41,8 @@ export const MyProvider = ({ children }: IProps) => {
         saveEmail,
         updateEmailLogin,
         emailLogin,
+        dataUser,
+        setDataUser
       }}
     >
       {children}

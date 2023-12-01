@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/HomeScreen";
 import { SettingScreen } from "../screens/SettingScreen";
-import { Feather, Entypo, Ionicons } from "@expo/vector-icons";
+import { Feather, Entypo, Ionicons,MaterialIcons } from "@expo/vector-icons";
 import { windowHeight, windowWidth } from "../utils/dimensions";
 import { KeyboardAvoidingView, View } from "react-native";
 import { allColors } from "../utils/colors";
 import { BeforePostScreen } from "../screens/BeforePostScreen";
-
+import { Image } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -32,13 +32,12 @@ export function MyTabs() {
               // marginBottom: windowWidth * 0.05,
               // borderRadius: 20,
               // elevation: 0,
-              backgroundColor: '#fff',
+              backgroundColor: "#4AAECA",
 
               marginTop: 20,
             },
             tabBarItemStyle: {
               height: windowHeight * 0.07,
-             
             },
           }}
         >
@@ -46,10 +45,13 @@ export function MyTabs() {
             name="Home"
             component={HomeScreen}
             options={{
-              
-              tabBarLabel: "Home",
-              tabBarIcon: ({ color, size }) => (
-                <Feather name="home" color={color} size={size} />
+              tabBarLabel: "",
+              tabBarIcon: ({ color, size, focused }) => (
+                <Image
+                style={{ width: focused ? 30 : 20, // Ajusta el tamaño cuando la pestaña está activa
+                height: focused ? 40 : 30,}}
+                source={require("../../assets/icons/logoLupa.png")}
+              />
               ),
             }}
           />
@@ -57,9 +59,9 @@ export function MyTabs() {
             name="CreatePost"
             component={BeforePostScreen}
             options={{
-              tabBarLabel: "Post",
-              tabBarIcon: ({ color, size }) => (
-                <Entypo name="circle-with-plus" color={color} size={size} />
+              tabBarLabel: "",
+              tabBarIcon: ({ color, size, focused }) => (
+                <MaterialIcons name="home-work" size={focused ? 40 : 27} color="white" />
               ),
             }}
           />
@@ -67,8 +69,9 @@ export function MyTabs() {
             name="Setting"
             component={SettingScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="settings-outline" color={color} size={size} />
+              tabBarLabel:'',
+              tabBarIcon: ({ color, size, focused }) => (
+                <Ionicons name="settings-outline" color={'white'} size={focused ? 40 : 27} />
               ),
             }}
           />

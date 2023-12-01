@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import { allColors } from "../../utils/colors";
 
 export const ModalComponent = ({ isModalOpen, setIsModalOpen, onPress, title, titleButton }: any) => {
   return (
@@ -58,10 +59,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: allColors.backgorunGreen,
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    paddingHorizontal:50,
+    backgroundColor: allColors.backgorunGreen,
   },
   textStyle: {
     color: "white",

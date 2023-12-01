@@ -8,5 +8,7 @@ export type MyContextType = {
   saveEmail:string 
   updateStateEmail:(newEmail:string)=>void;
   updateEmailLogin:(newEmail:string)=>void;
-  emailLogin:string
+  emailLogin:string,
+  dataUser: any; 
+  setDataUser:(data:any) => void;
 };

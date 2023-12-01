@@ -20,33 +20,29 @@ import { SpinnerComponet } from "../global/SpinnerComponent";
 import { useStackNavigation } from "../../hooks/useStackNavigation";
 import { ModalComponent } from "../global/Modal";
 export const Forms = () => {
-  const [selectedCity, setSelectedCity] = useState("Altamirano");
-  const [selectedState, setSelectedState] = useState("Chiapas");
+
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const { navigateToCreateAccount, navigateToLoginGoogle } =
     useStackNavigation();
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const initialValues: ICreateAccount = {
+  const initialValues  = {
     name: "",
     lastName: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    age: "",
     phone: "",
     email: "",
     password: "",
   };
-
-  const address = "temporary - address";
   const createUserFunc = async (data: object) => {
     const response = await createUser(data);
+    console.log('hola',response)
 
     //redirigir al login o home ?
-    if (response === "success") {
+    if (response !== null) {
       setIsModalOpen(true);
+      console.log('isModalOpen:', isModalOpen);
       setIsLoading(false);
     }
   };
@@ -64,7 +60,7 @@ export const Forms = () => {
           marginBottom: windowHeight * 0.09,
         }}
       >
-        Get Started 👋
+        Crea una cuenta  👋
       </Text>
 
       <ScrollView
@@ -81,12 +77,6 @@ export const Forms = () => {
               errors.name = validateName(values.name.toString());
             if (validateLastName(values.lastName.toString()))
               errors.lastName = validateLastName(values.lastName.toString());
-            if (validatePostalCode(values.postalCode.toString()))
-              errors.postalCode = validatePostalCode(
-                values.postalCode.toString()
-              );
-            if (validateAge(values.age.toString()))
-              errors.age = validateAge(values.age.toString());
             if (validatePhone(values.phone.toString()))
               errors.phone = validatePhone(values.phone.toString());
             if (validateEmail(values.email.toString()))
@@ -104,11 +94,7 @@ export const Forms = () => {
             }
             const data = {
               ...values,
-              city: selectedCity,
-              state: selectedState,
-              address: address,
             };
-            console.log(data);
             setIsLoading(true);
             //send user data
             createUserFunc(data);
@@ -150,7 +136,7 @@ export const Forms = () => {
                 {/* is modal */}
                 {isModalOpen ? (
                   <ModalComponent
-                    title={"Bienvenido, la cuenta se creo con exito"}
+                    title={"Bienvenido, la cuenta se creó con éxito"}
                     titleButton={"Ir al login"}
                     onPress={() => modalRedirect()}
                     isModalOpen={isModalOpen}
@@ -159,18 +145,8 @@ export const Forms = () => {
                 ) : (
                   ""
                 )}
-                <Text style={styles.text}>Ciudad</Text>
-                <PickerCity
-                  selectedCity={selectedCity}
-                  setSelectedCity={setSelectedCity}
-                />
+       
 
-                <Text style={styles.text}>Estado</Text>
-
-                <PickerState
-                  selectedState={selectedState}
-                  setSelectedState={setSelectedState}
-                ></PickerState>
               </View>
               {isLoading ? <SpinnerComponet></SpinnerComponet> : <></>}
               <ButtonPrimaryComponent

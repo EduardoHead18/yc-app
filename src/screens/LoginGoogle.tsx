@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   Alert,
+  ImageBackground,
 } from "react-native";
 import {
   GoogleSignin,
@@ -28,10 +29,9 @@ import {
   validatePassword,
 } from "../components/createAccount/validation";
 import { userLogin } from "../services/loginApi";
-import { MyContext } from "../context/MyContext";
 import { SaveTokenInStorage } from "../utils/saveTokenInStorage";
-import { MyContextType } from "../types/typesContext";
 import { createUser } from "../services/createUserApi";
+import { MyContext } from "../context/MyContext";
 
 interface ILogin {
   email: string;
@@ -51,6 +51,8 @@ export const LoginGoogle = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formErrors, setFormErrors] = useState<string>();
 
+  const myContext = useContext(MyContext);
+  
   const { navigateToRecoverPassword, navigateToCreateAccount, navigateToTabs } =
     useStackNavigation();
 
@@ -80,7 +82,8 @@ export const LoginGoogle = () => {
         const response = await createUser(dataUser);
         console.log('desde la api', response);
         if (response) {
-          SaveTokenInStorage(response);
+          myContext?.setDataUser(response.data_user[0])
+          SaveTokenInStorage(response.data_user[0]);
           navigateToTabs();
         }
       } catch (error) {
@@ -89,6 +92,8 @@ export const LoginGoogle = () => {
       }
     }
   };
+
+
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -106,6 +111,7 @@ export const LoginGoogle = () => {
       };
 
       setUserInfoState(userInformation);
+      myContext?.setDataUser(userInformation)
       console.log('from user', userInformation)
       await addUserDataToApi(userInformation);
     } catch (error: any) {
@@ -135,6 +141,7 @@ export const LoginGoogle = () => {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+
         <View style={styles.curveBackground}>
           <Image
             style={{ width: 347, height: 277 }}
@@ -162,8 +169,9 @@ export const LoginGoogle = () => {
           >
             {formErrors}
           </Text>
+     
         </View>
-
+    
         {/* is Loading */}
         {isLoading ? <SpinnerComponet /> : ""}
 
@@ -206,8 +214,9 @@ export const LoginGoogle = () => {
                 response &&
                 response.message === "successful authentication"
               ) {
-                console.log("este es el token del home: " + response);
-                SaveTokenInStorage(response);
+                const findEmailResponse = await fetch(`http://localhost:8080/api/v1/user/email/${values.email}`)
+                const dataJson = await findEmailResponse.json()
+                SaveTokenInStorage(dataJson);
                 //save email in context
                 navigateToTabs();
               } else {
@@ -248,7 +257,7 @@ export const LoginGoogle = () => {
                 <TouchableOpacity onPress={() => navigateToRecoverPassword()}>
                   <Text
                     style={{
-                      color: "#B34766",
+                      color:allColors.backgorunGreen,
                       textAlign: "center",
                       marginBottom: windowHeight * 0.02,
                     }}
@@ -278,7 +287,7 @@ export const LoginGoogle = () => {
 
                 <Text
                   style={{
-                    color: "#FF6680",
+                    color: allColors.backgorunGreen,
                     lineHeight: 20,
                     textAlign: "center",
                     marginTop: windowHeight * 0.02,
@@ -351,10 +360,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text2: {
-    color: "#B34766",
+    color: allColors.backgorunGreen,
     fontSize: 17,
   },
   overlayContainer: {
     ...StyleSheet.absoluteFillObject,
   },
+  
 });

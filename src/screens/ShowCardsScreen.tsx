@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { findOnePost } from "../services/findOnePost";
 import { allColors } from "../utils/colors";
 import { ButtonPrimaryComponent } from "../components/global/ButtonPrimaryComponent";
@@ -8,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import Geocoder from "react-native-geocoding";
 import { GOOGLE_MAPS_KEY } from "@env";
+import * as Linking from "expo-linking";
+import { getUserInfo } from "../utils/getUserInfo";
 
 interface ILocationData {
   latitude: number;
@@ -17,28 +26,44 @@ interface ILocationData {
 }
 
 export const ShowCards = ({ route }: any) => {
+  const [storageData, setStorageData] = useState<any>();
+  //llamadas
+
+  // const getUserInfoStorage = async () => {
+  //   const data = await getUserInfo();
+  //   setStorageData(data);
+  // };
+
+  // const handlePhoneCall = async() => {
+  // try {
+  //   await Linking.openURL("tel:+9191266429")
+  // } catch (error) {
+  //   console.log(error)
+  // }
+  // };
+
+  //aqui abajo solo cosas de mapas
+
   const { postId } = route.params || {};
   const [data, setData] = useState<any>();
   //google maps
   const [coordinates, setCoordinates] = useState({
     latitude: 16.9087258,
-    longitude:  -92.0943351,
+    longitude: -92.0943351,
   });
   const address = data ? `${data.location} ocosingo chiapas` : undefined;
   const searchLocation = async () => {
-  Geocoder.init(GOOGLE_MAPS_KEY); 
+    Geocoder.init(GOOGLE_MAPS_KEY);
 
-  try {
-    if (address) {
-      console.log(address)
-      const response = await Geocoder.from(address);
-      const { lat, lng } = response.results[0].geometry.location;
-      setCoordinates({ latitude: lat, longitude: lng });
-      console.log('maps response:', response);
+    try {
+      if (address) {
+        const response = await Geocoder.from(address);
+        const { lat, lng } = response.results[0].geometry.location;
+        setCoordinates({ latitude: lat, longitude: lng });
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
     }
-  } catch (error) {
-    console.error("Error searching location:", error);
-  }
   };
 
   //navigation
@@ -56,7 +81,7 @@ export const ShowCards = ({ route }: any) => {
   useEffect(() => {
     findPost();
     searchLocation();
-
+    
   }, [address]);
 
   if (!data) {
@@ -133,8 +158,7 @@ export const ShowCards = ({ route }: any) => {
                 }}
               >
                 <MapView
-               
-                  style={{  flex: 1, borderRadius:20}}
+                  style={{ flex: 1, borderRadius: 20 }}
                   region={{
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
@@ -172,6 +196,12 @@ export const ShowCards = ({ route }: any) => {
                 </Text>
               </View>
             </View>
+            <Text style={styles.title}>Contacto:</Text>
+           
+            <Text>Teléfono: {data.phone}</Text>
+            <Text style={{ marginBottom: windowHeight * 0.05 }}>
+              Email: {data.email}
+            </Text>
           </View>
         </ScrollView>
       </View>

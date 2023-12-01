@@ -2,15 +2,10 @@ import {
     StyleSheet,
     Text,
     View,
-    Button,
-    Image,
     ImageBackground,
     KeyboardAvoidingView,
-    TextInput,
-    ScrollView,
   } from "react-native";
   
-  import { allColors } from "../utils/colors";
   import { windowHeight, windowWidth } from "../utils/dimensions";
   import { Forms } from "../components/createAccount/Forms";
   
@@ -21,11 +16,10 @@ import {
           <ImageBackground
             style={styles.backgroundImage}
             resizeMode="cover"
-            source={require("../../assets/images/login/background.png")}
+            source={require("../../assets/backgroundBlue.png")}
           >
   
         <View style={{marginTop:windowHeight*0.12}}>
-          <Text></Text>
         <Forms ></Forms>
         </View>
           </ImageBackground>

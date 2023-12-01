@@ -14,8 +14,10 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { allColors } from "../utils/colors";
 import { windowHeight, windowWidth } from "../utils/dimensions";
 import { useStackNavigation } from "../hooks/useStackNavigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getPost } from "../services/getPostApi";
+import { MyContext } from "../context/MyContext";
+import { getUserInfo } from "../utils/getUserInfo";
 
 export const HomeScreen = () => {
   const [dataApi, setDataApi] = useState<any>();
@@ -23,15 +25,24 @@ export const HomeScreen = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isTokenExisting, setIsTokenExisting] = useState<boolean>();
 
+  const myContext = useContext(MyContext);
+
+ 
   const getPostApiHome = async () => {
     try {
       const response = await getPost();
       setDataApi(response);
+      //save on cache
+
+      const infoUser = await getUserInfo()
+      myContext?.setDataUser(infoUser)
+  
     } catch (error) {
       return console.log("error al cargar l api");
     }
   };
   useEffect(() => {
+    //agregar la data de cache al estado:
     getPostApiHome();
   }, [page]);
 
@@ -43,6 +54,14 @@ export const HomeScreen = () => {
   //routes
   const { navigateToTheShowCards } = useStackNavigation();
   //contexto
+
+  if(!dataApi){
+    return(
+      <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+        <Text>Cargando...</Text>
+      </View>
+    )
+  }
 
   const renderData = ({ item }: any) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -84,7 +103,7 @@ export const HomeScreen = () => {
               </Text>
 
               <View style={styles.iconCard}>
-                <AntDesign name="hearto" size={20} color="black" />
+                <AntDesign name="hearto" size={20} color="white" />
               </View>
             </View>
           </View>
@@ -97,7 +116,7 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView
       style={{
-        width: windowWidth * 0.9,
+        width: windowWidth * 0.95,
         alignSelf: "center",
         marginTop: windowHeight * 0.07,
       }}
@@ -105,16 +124,14 @@ export const HomeScreen = () => {
       <StatusBar backgroundColor={"#FF0000"} barStyle={"default"} />
       <SearchComponent searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-
-        <FlatList
-          inverted={true}
-          data={dataApi}
-          renderItem={renderData}
-          showsVerticalScrollIndicator={false}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.1}
-        />
-     
+      <FlatList
+        inverted={true}
+        data={dataApi}
+        renderItem={renderData}
+        showsVerticalScrollIndicator={false}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.1}
+      />
     </SafeAreaView>
   );
 };
@@ -159,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: allColors.backgroundGreenCards,
     borderRadius: 100,
-    padding: 4,
+    padding: 0,
     paddingHorizontal: 20,
     marginBottom: windowHeight * 0.02,
   },

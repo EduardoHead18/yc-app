@@ -15,22 +15,7 @@ export const formsProps = [
         secureTextEntry:false,
         limit:20
     },
-    {
-        id:5,
-        name:'postalCode',
-        visibleText: 'Codigo Postal',
-        keyboardType:'number-pad',
-        secureTextEntry:false,
-        limit:5
-    },
-    {
-        id:6,
-        name:'age',
-        visibleText: 'Edad',
-        keyboardType:'number-pad',
-        secureTextEntry:false,
-        limit:2
-    },
+    
     {
         id:7,
         name:'phone',
