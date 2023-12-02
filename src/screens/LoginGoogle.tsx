@@ -10,7 +10,7 @@ import {
   Platform,
   Image,
   Alert,
-  ImageBackground,
+
 } from "react-native";
 import {
   GoogleSignin,
@@ -32,6 +32,7 @@ import { userLogin } from "../services/loginApi";
 import { SaveTokenInStorage } from "../utils/saveTokenInStorage";
 import { createUser } from "../services/createUserApi";
 import { MyContext } from "../context/MyContext";
+import React from "react";
 
 interface ILogin {
   email: string;
@@ -135,6 +136,10 @@ export const LoginGoogle = () => {
     password: "",
   };
 
+  //clean inputs
+  const resetForm = () => {
+    setUserInfoState(initialValues);
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -217,7 +222,8 @@ export const LoginGoogle = () => {
                 const findEmailResponse = await fetch(`http://localhost:8080/api/v1/user/email/${values.email}`)
                 const dataJson = await findEmailResponse.json()
                 SaveTokenInStorage(dataJson);
-                //save email in context
+                //limpiar campos del input
+                resetForm(); // Limpiar los campos de entrada
                 navigateToTabs();
               } else {
                 setIsLoading(false);
@@ -368,3 +374,4 @@ const styles = StyleSheet.create({
   },
   
 });
+

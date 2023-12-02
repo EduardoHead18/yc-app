@@ -1,13 +1,13 @@
-import { View, Text, Image, StyleSheet, Switch } from "react-native";
-import { ButtonPrimaryComponent } from "../components/global/ButtonPrimaryComponent";
+import { View, Text, Image, StyleSheet, Alert } from "react-native";
 import { windowHeight, windowWidth } from "../utils/dimensions";
-import { Feather, MaterialCommunityIcons,Ionicons,SimpleLineIcons,AntDesign } from "@expo/vector-icons";
+import { Feather, SimpleLineIcons,AntDesign } from "@expo/vector-icons";
 import { allColors } from "../utils/colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useContext, useEffect, useState } from "react";
+import {  useState } from "react";
 import { useStackNavigation } from "../hooks/useStackNavigation";
-import { getUserInfo } from "../utils/getUserInfo";
-import { MyContext } from "../context/MyContext";
+
+import { Entypo } from '@expo/vector-icons'; 
+import { deleteStorage } from "../utils/saveTokenInStorage";
 
 export const SettingScreen = () => {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -15,10 +15,7 @@ export const SettingScreen = () => {
 
 
   // navigation
-  const {navigateToSubscription, navigateToAccountScreen}  = useStackNavigation()
-  const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
-  };
+  const {navigateToSubscription, navigateToAccountScreen, navigateToLoginGoogle}  = useStackNavigation()
 
 
 
@@ -75,6 +72,39 @@ export const SettingScreen = () => {
               style={[styles.title, { paddingBottom: windowHeight * 0.02 }]}
             >
              Condiciones y Politica de privacidad
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.containersButton}
+
+          onPress={() => {
+            Alert.alert(
+              "Cerrar sesión",
+              "¿Estás seguro de querer cerrar tu sesión?",
+              [
+                {
+                  text: "Cancelar",
+                  style: "cancel",
+                },
+                {
+                  text: "Cerrar sesión",
+                  onPress: async() => {
+                    await deleteStorage()
+                    navigateToLoginGoogle()
+                  }
+                },
+              ],
+              { cancelable: false }
+            );
+          }}
+        >
+          <Entypo name="log-out" size={24} color={allColors.backgorunGreen} />
+          <View>
+            <Text
+              style={[styles.title, { paddingBottom: windowHeight * 0.02 }]}
+            >
+             Cerrar sesión
             </Text>
           </View>
         </TouchableOpacity>

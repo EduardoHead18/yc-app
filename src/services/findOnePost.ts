@@ -5,13 +5,13 @@ export const findOnePost = async (id:string) => {
         const response = await fetch(`${url}${id}`);
         
         if (!response.ok) {
-          throw new Error(`Request failed with status: ${response.status}`);
+          console.log(`Request failed with status: ${response.status}`);
         }
     
         const responseJson = await response.json();
         return responseJson;
       } catch (error) {
-        console.error('Error fetching API:', error);
+        console.log('Error fetching API:', error);
         return null; // Puedes devolver null o cualquier otro valor que indique un error
       }
   };

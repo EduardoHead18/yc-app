@@ -9,6 +9,8 @@ import {
   Alert,
   FlatList,
   TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { findOnePost } from "../services/findOnePost";
 import { allColors } from "../utils/colors";
@@ -24,10 +26,11 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { updatePostApi } from "../services/updatePost";
+import { CLOUD_NAME } from "@env";
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: "dwmmdvzgq", // Reemplaza con tu cloud name
+    cloudName: CLOUD_NAME,
   },
   url: {
     secure: true,
@@ -35,7 +38,7 @@ const cld = new Cloudinary({
 });
 
 const options = {
-  upload_preset: "your-confort-images", // Reemplaza con tu upload preset
+  upload_preset: "your-confort-images",
   unsigned: true,
 };
 
@@ -58,12 +61,9 @@ export const UpdatePost = ({ route }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const { postId } = route.params || {};
-  const [data, setData] = useState<any>(); 
+  const [data, setData] = useState<any>(null);
 
-  const [storageData, setStorageData] = useState<any>();
-
-
-
+  console.log("esta es la data", data);
   const findPost = async () => {
     try {
       const response = await findOnePost(postId);
@@ -75,8 +75,6 @@ export const UpdatePost = ({ route }: any) => {
       setDataLoaded(true);
     }
   };
-
-
 
   useEffect(() => {
     findPost();
@@ -148,19 +146,9 @@ export const UpdatePost = ({ route }: any) => {
       Alert.alert("Error", "Hubo un error al subir las imágenes.");
     }
   };
-  //llamada a la api
-
-  //formik
-  const initialValues = {
-    title: data?.title ?? "",
-    url: "",
-    description: "",
-    location: "",
-    price: 0,
-  };
 
   return (
-    <>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
         style={{
           flex: 1,
@@ -197,7 +185,7 @@ export const UpdatePost = ({ route }: any) => {
                     width: windowWidth * 0.8,
                     justifyContent: "center",
                     alignItems: "center",
-                    height: windowHeight * 0.4,
+                    height: windowHeight * 0.5,
                     borderRadius: 10,
                     marginTop: windowHeight * 0.09,
                   }}
@@ -218,17 +206,51 @@ export const UpdatePost = ({ route }: any) => {
               }}
               onPress={handleImagePicker}
             >
-              <AntDesign
-                style={styles.iconPlus}
-                name="plus"
-                size={60}
-                color="black"
-              />
+              {data ? (
+                <FlatList
+                  data={data.url}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => {
+                    console.log("Rendering image with URL:", item);
+                    return (
+                      <View
+                        style={{
+                          width: windowWidth * 0.8,
+                          height: windowHeight * 0.4,
+                        }}
+                      >
+                        <Image
+                          source={{ uri: item }}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: 10,
+                          }}
+                        />
+                      </View>
+                    );
+                  }}
+                />
+              ) : (
+                <AntDesign
+                  style={styles.iconPlus}
+                  name="plus"
+                  size={60}
+                  color="black"
+                />
+              )}
             </TouchableOpacity>
           )}
-          {dataLoaded ? (
+          {dataLoaded && data ? (
             <Formik
-              initialValues={initialValues}
+              initialValues={{
+                title: data ? data.title : "",
+                url: data ? data.url : "",
+                description: data ? data.description : "",
+                location: data ? data.location : "",
+                price: data ? data.price : 0,
+              }}
+              enableReinitialize
               validate={async (values) => {
                 const errors: Partial<IPost> = {};
                 // Verificar si hay imágenes seleccionadas
@@ -287,71 +309,78 @@ export const UpdatePost = ({ route }: any) => {
                 }
               }}
             >
-              {({ handleChange, handleBlur, handleSubmit }) => (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <Text
-                    style={{ fontSize: 17, marginTop: windowHeight * 0.05 }}
-                  >
-                    Titulo
-                  </Text>
-                  <TextInput
-                    onChangeText={handleChange("title")}
-                    onBlur={handleBlur("title")}
-                    style={styles.texInput}
-                    autoFocus={false}
-                    keyboardType={"email-address"}
-                    maxLength={100}
-                    autoCapitalize="none"
-                  />
-                  <Text style={{ fontSize: 17 }}>Descripcion</Text>
-                  <TextInput
-                    onChangeText={handleChange("description")}
-                    onBlur={handleBlur("description")}
-                    style={styles.texInput}
-                    autoFocus={false}
-                    keyboardType={"default"}
-                    secureTextEntry={false}
-                    maxLength={1000}
-                    autoCapitalize="none"
-                  />
-                  <Text style={{ fontSize: 17 }}>Ubicación</Text>
-                  <TextInput
-                    onChangeText={handleChange("location")}
-                    onBlur={handleBlur("location")}
-                    style={styles.texInput}
-                    autoFocus={false}
-                    keyboardType={"default"}
-                    secureTextEntry={false}
-                    maxLength={70}
-                    autoCapitalize="none"
-                  />
-                  <Text style={{ fontSize: 17 }}>Precio (mensual)</Text>
-                  <TextInput
-                    onChangeText={handleChange("price")}
-                    onBlur={handleBlur("price")}
-                    style={[styles.texInput]}
-                    autoFocus={false}
-                    secureTextEntry={false}
-                    maxLength={70}
-                    autoCapitalize="none"
-                  />
+              {({ handleChange, handleBlur, handleSubmit, values }) => {
+                return (
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <Text
+                      style={{ fontSize: 17, marginTop: windowHeight * 0.05 }}
+                    >
+                      Titulo
+                    </Text>
+                    <TextInput
+                      onChangeText={handleChange("title")}
+                      onBlur={handleBlur("title")}
+                      value={values.title}
+                      style={styles.texInput}
+                      autoFocus={false}
+                      keyboardType={"email-address"}
+                      maxLength={100}
+                      autoCapitalize="none"
+                    />
+                    <Text style={{ fontSize: 17 }}>Descripcion</Text>
+                    <TextInput
+                      onChangeText={handleChange("description")}
+                      onBlur={handleBlur("description")}
+                      value={values.description}
+                      style={styles.texInput}
+                      autoFocus={false}
+                      keyboardType={"default"}
+                      secureTextEntry={false}
+                      maxLength={1000}
+                      autoCapitalize="none"
+                    />
+                    <Text style={{ fontSize: 17 }}>Ubicación</Text>
+                    <TextInput
+                      onChangeText={handleChange("location")}
+                      onBlur={handleBlur("location")}
+                      value={values.location}
+                      style={styles.texInput}
+                      autoFocus={false}
+                      keyboardType={"default"}
+                      secureTextEntry={false}
+                      maxLength={70}
+                      autoCapitalize="none"
+                    />
+                    <Text style={{ fontSize: 17 }}>Precio (mensual)</Text>
+                    <TextInput
+                      onChangeText={handleChange("price")}
+                      onBlur={handleBlur("price")}
+                      value={values.price.toString()}
+                      style={[styles.texInput]}
+                      autoFocus={false}
+                      secureTextEntry={false}
+                      maxLength={70}
+                      keyboardType={"numeric"}
+                      autoCapitalize="none"
+                    />
 
-                  <View style={{ marginBottom: windowHeight * 0.05 }}>
-                    {isLoading ? <SpinnerComponet /> : ""}
-                    <ButtonPrimaryComponent
-                      text="subir post"
-                      onPress={handleSubmit}
-                    ></ButtonPrimaryComponent>
-                  </View>
-                </ScrollView>
-              )}
+                    <View style={{ marginBottom: windowHeight * 0.05 }}>
+                      {isLoading ? <SpinnerComponet /> : ""}
+                      <ButtonPrimaryComponent
+                        text="Guardar post"
+                        onPress={handleSubmit}
+                      ></ButtonPrimaryComponent>
+                    </View>
+                  </ScrollView>
+                );
+              }}
             </Formik>
           ) : (
             ""
           )}
         </View>
       </View>
-    </>
+    </TouchableWithoutFeedback>
   );
 };
 

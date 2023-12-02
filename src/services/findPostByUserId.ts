@@ -10,7 +10,7 @@ export const findpostByID = async (id: string) => {
           "No se encontraron publicaciones para el usuario con ID:",
           id
         );
-        return { posts: [] };
+        return null;
       } else {
         console.log(`Request failed with status: ${response.status}`);
       }
@@ -19,7 +19,7 @@ export const findpostByID = async (id: string) => {
     const responseJson = await response.json();
     return responseJson;
   } catch (error) {
-    console.error("Error fetching API:", error);
+    console.log("Error fetching API:", error);
     return null;
   }
 };

@@ -4,4 +4,5 @@ declare module "@env" {
   export const WEB_CLIENT_ID: string;
   export const PUBLISHABLE_KEY: string;
   export const GOOGLE_MAPS_KEY: string;
+  export const CLOUD_NAME: string;
 }

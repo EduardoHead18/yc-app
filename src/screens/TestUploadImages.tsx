@@ -8,6 +8,8 @@ import {
   Text,
   TextInput,
   FlatList,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Cloudinary } from "@cloudinary/url-gen";
@@ -134,6 +136,7 @@ export const TestUploadImages = () => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View
       style={{
         flex: 1,
@@ -307,6 +310,7 @@ export const TestUploadImages = () => {
                 secureTextEntry={false}
                 maxLength={70}
                 autoCapitalize="none"
+                keyboardType={'numeric'}
               />
 
               <View style={{ marginBottom: windowHeight * 0.05 }}>
@@ -321,6 +325,7 @@ export const TestUploadImages = () => {
         </Formik>
       </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 

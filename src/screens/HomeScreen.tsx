@@ -31,8 +31,10 @@ export const HomeScreen = () => {
   const getPostApiHome = async () => {
     try {
       const response = await getPost();
-      setDataApi(response);
-      //save on cache
+     // Assuming the 'response' is an array of posts, sort them from newest to oldest
+     const sortedResponse = response.sort((a:any, b:any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+     const reversedResponse = sortedResponse.reverse();
+    setDataApi(reversedResponse);
 
       const infoUser = await getUserInfo()
       myContext?.setDataUser(infoUser)
@@ -125,7 +127,7 @@ export const HomeScreen = () => {
       <SearchComponent searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       <FlatList
-        inverted={true}
+       // inverted={true}
         data={dataApi}
         renderItem={renderData}
         showsVerticalScrollIndicator={false}

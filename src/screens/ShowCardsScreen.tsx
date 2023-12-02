@@ -140,6 +140,7 @@ export const ShowCards = ({ route }: any) => {
                   </View>
                 ))}
             </ScrollView>
+            <Text style={{fontSize:24, fontWeight:'500', marginTop:windowHeight*0.02}}>{data.title}</Text>
             <Text style={styles.title}>Descripcion:</Text>
             <Text>{data.description}</Text>
             <Text style={styles.title}>Ubicación: </Text>

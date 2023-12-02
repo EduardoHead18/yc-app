@@ -33,12 +33,7 @@ export const BeforePostScreen = () => {
   const [infoPost, setInfoPost] = useState<IPost[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const isFocused = useIsFocused();
-  const {
-    navigateToTheShowCards,
-    navigateToCreatePost,
-    navigateToSubscription,
-    navigateToUpdatePost,
-  } = useStackNavigation();
+  const { navigateToTheShowCards, navigateToUpdatePost } = useStackNavigation();
   //get Token inf
 
   const navigation = useNavigation();
@@ -48,6 +43,10 @@ export const BeforePostScreen = () => {
       const idUserFromStorage = await getUserInfo();
 
       const response = await findpostByID(idUserFromStorage._id);
+      if(response == null) {
+        setInfoPost([]);
+        return;
+      }
       if (response && response.posts) {
         setInfoPost(response.posts);
       } else {
@@ -69,8 +68,8 @@ export const BeforePostScreen = () => {
 
   //eliminar publicacion
   const deletePostFunc = async () => {
-    const response = await deletePostApi(infoPost[0]._id);
-    console.log("del yeison", response);
+    await deletePostApi(infoPost[0]._id);
+    //console.log("del yeison", response);
   };
 
   useEffect(() => {
@@ -88,7 +87,6 @@ export const BeforePostScreen = () => {
   }, []);
 
   const renderData = ({ item }: any) => {
-    console.log("el item: " + item._id);
     return (
       <>
         <TouchableOpacity onPress={() => navigateToTheShowCards(item._id)}>
@@ -211,7 +209,7 @@ export const BeforePostScreen = () => {
             }}
             source={require("../../assets/arrow.png")}
           />
-          <ButtonRounded />
+          <ButtonRounded infoPost={infoPost} />
         </View>
       ) : (
         // Renderizar la información cuando hay elementos en infoPost
@@ -238,14 +236,19 @@ export const BeforePostScreen = () => {
             onRefresh={handleRefresh}
             refreshing={refreshing}
           />
-          <ButtonRounded />
+          <ButtonRounded infoPost={infoPost} />
         </View>
       )}
     </>
   );
 };
 
-const ButtonRounded = ({}: { onPress?: () => void }) => {
+const ButtonRounded = ({
+  infoPost,
+}: {
+  infoPost: IPost[];
+  onPress?: () => void;
+}) => {
   //satates
   const [dataStorage, setDataStorage] = useState<any>();
   const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
@@ -259,17 +262,15 @@ const ButtonRounded = ({}: { onPress?: () => void }) => {
   };
 
   const getUserData = async () => {
-    //get api:
-    console.log("datos", dataStorage);
     const responseApi = await fetch(
       `http://localhost:8080/api/v1/user_subscription/${dataStorage._id}`
     );
+    console.log('responseeee', responseApi)
+
     const respuestaDeLaSubscription = await responseApi.json();
-    console.log("el id es", dataStorage._id);
-    console.log(
-      "la suscripcion es de:",
-      respuestaDeLaSubscription.subscriptions[0].type_subscription
-    );
+
+    //las validaciones de el tipo de suscripciones
+
     if (responseApi.ok) {
       //validar si es suscripcion avanzada
       if (
@@ -277,42 +278,42 @@ const ButtonRounded = ({}: { onPress?: () => void }) => {
         "avanzado"
       ) {
         const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost === null) {
-          navigateToCreatePost();
-          return "";
-        }
         if (contadorDePost.posts.length > 5) {
           navigateToSubscription();
           return "";
         }
+        if (contadorDePost === null ||contadorDePost.posts.lenght <=5 ) {
+          navigateToCreatePost();
+          return "";
+        }
       }
       //validar si es premium
-      if (
+      else if (
         respuestaDeLaSubscription.subscriptions[0].type_subscription ===
         "premium"
       ) {
         const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost === null) {
-          navigateToCreatePost();
+        if (contadorDePost.posts.lenght > 10) {
+          navigateToSubscription();
           return "";
         }
-        if (contadorDePost.posts.length > 10) {
-          navigateToSubscription();
+        if (contadorDePost === null || contadorDePost.posts.length <= 10) {
+          navigateToCreatePost();
           return "";
         }
       }
       //validar si es elite
-      if (
+      else if (
         respuestaDeLaSubscription.subscriptions[0].type_subscription ===
         "elite plus"
       ) {
         const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost === null) {
-          navigateToCreatePost();
+        if (contadorDePost.posts.lenght > 20) {
+          navigateToSubscription();
           return "";
         }
-        if (contadorDePost.posts.length > 20) {
-          navigateToSubscription();
+        if (contadorDePost === null ||contadorDePost.posts.length <= 20) {
+          navigateToCreatePost();
           return "";
         }
       }
@@ -328,8 +329,15 @@ const ButtonRounded = ({}: { onPress?: () => void }) => {
     }
   };
   useEffect(() => {
-    getUserInfoFunc();
-  }, []);
+    const checkUserStatus = async () => {
+      // Obtén la información del usuario
+      await getUserInfoFunc();
+
+  
+    };
+
+    checkUserStatus();
+  }, [hasSubscription]);
 
   return (
     <View
@@ -349,7 +357,11 @@ const ButtonRounded = ({}: { onPress?: () => void }) => {
       <TouchableOpacity
         onPress={() => {}}
         onPressIn={async () => {
-          await getUserData();
+          try {
+            await getUserData();
+          } catch (error) {
+            console.log(error)
+          }
         }}
       >
         <AntDesign name="plus" size={24} color={allColors.whiteColor} />

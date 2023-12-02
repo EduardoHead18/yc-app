@@ -22,7 +22,6 @@ export const AccountScreen = () => {
     navigation.goBack();
   };
 
-
   useEffect(() => {
     const dataUser = async () => {
       const dataUser = await getUserInfo();
@@ -38,7 +37,7 @@ export const AccountScreen = () => {
     dataUser();
   }, []);
   return (
-    <View style={{ marginTop: windowHeight * 0.09, paddingHorizontal: 10,  }}>
+    <View style={{ marginTop: windowHeight * 0.09, paddingHorizontal: 10 }}>
       <ButtonPrimaryComponent
         text={"< Atras"}
         onPress={() => navigation.goBack()}
@@ -134,17 +133,23 @@ export const AccountScreen = () => {
             ""
           )}
 
-          <TouchableOpacity
-          onPress={()=>{setIsModalOpen(true)}}
-            style={{
-              backgroundColor: "#F05454",
-              padding: 10,
-              marginTop: windowHeight * 0.02,
-              borderRadius: 100,
-            }}
-          >
-            <Text style={{ textAlign: "center" }}>Cancelar suscripción</Text>
-          </TouchableOpacity>
+          {dataSubscription?.active ? (
+            <TouchableOpacity
+              onPress={() => {
+                setIsModalOpen(true);
+              }}
+              style={{
+                backgroundColor: "#F05454",
+                padding: 10,
+                marginTop: windowHeight * 0.02,
+                borderRadius: 100,
+              }}
+            >
+              <Text style={{ textAlign: "center" }}>Cancelar suscripción</Text>
+            </TouchableOpacity>
+          ) : (
+            ""
+          )}
         </View>
       </View>
     </View>
