@@ -1,5 +1,5 @@
 // const url: string = 'http://localhost:8080/api/v1/post/user/'
-const url: string = "https://your-confort-backend.onrender.com/api/v1/post/user";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/post/user/";
 
 
 export const findAllPostUser = async (id:string) => {
@@ -11,9 +11,10 @@ export const findAllPostUser = async (id:string) => {
         }
     
         const responseJson = await response.json();
+        console.log('ok', responseJson)
         return responseJson;
       } catch (error) {
-        console.error('Error fetching API:', error);
+        console.log('Error fetching API:', error);
         return null; // Puedes devolver null o cualquier otro valor que indique un error
       }
   };

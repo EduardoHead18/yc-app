@@ -8,6 +8,7 @@ import {
   TextInput,
   StatusBar,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -120,7 +121,7 @@ export const HomeScreen = () => {
       style={{
         width: windowWidth * 0.95,
         alignSelf: "center",
-        marginTop: windowHeight * 0.07,
+        marginTop: Platform.OS === 'ios' ? windowHeight * 0.07 : 0,
       }}
     >
       <StatusBar backgroundColor={"#FF0000"} barStyle={"default"} />

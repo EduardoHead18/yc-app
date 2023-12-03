@@ -43,7 +43,7 @@ export const BeforePostScreen = () => {
       const idUserFromStorage = await getUserInfo();
 
       const response = await findpostByID(idUserFromStorage._id);
-      if(response == null) {
+      if (response == null) {
         setInfoPost([]);
         return;
       }
@@ -260,61 +260,62 @@ const ButtonRounded = ({
     const response = await getUserInfo();
     setDataStorage(response);
   };
- 
+
   const getUserData = async () => {
     const responseApi = await fetch(
       `https://your-confort-backend.onrender.com/api/v1/user_subscription/${dataStorage._id}`
     );
-    console.log('responseeee', responseApi)
-
-    const respuestaDeLaSubscription = await responseApi.json();
-
-    //las validaciones de el tipo de suscripciones
-
     if (responseApi.ok) {
+      const respuestaDeLaSubscription = await responseApi.json();
+
+      //las validaciones de el tipo de suscripciones
+      
+
       //validar si es suscripcion avanzada
       if (
         respuestaDeLaSubscription.subscriptions[0].type_subscription ===
         "avanzado"
       ) {
         const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost.posts.length > 5) {
-          navigateToSubscription();
-          return "";
+        if (contadorDePost.length && contadorDePost.posts) {
+          if (contadorDePost.posts.length > 5) {
+            navigateToSubscription();
+            return "";
+          }
+          if (contadorDePost === null || contadorDePost.posts.lenght <= 5) {
+            navigateToCreatePost();
+            return "";
+          }
         }
-        if (contadorDePost === null ||contadorDePost.posts.lenght <=5 ) {
-          navigateToCreatePost();
-          return "";
+        //validar si es premium
+        else if (
+          respuestaDeLaSubscription.subscriptions[0].type_subscription ===
+          "premium"
+        ) {
+          const contadorDePost = await findAllPostUser(dataStorage._id);
+          if (contadorDePost.posts.lenght > 10) {
+            navigateToSubscription();
+            return "";
+          }
+          if (contadorDePost === null || contadorDePost.posts.length <= 10) {
+            navigateToCreatePost();
+            return "";
+          }
         }
-      }
-      //validar si es premium
-      else if (
-        respuestaDeLaSubscription.subscriptions[0].type_subscription ===
-        "premium"
-      ) {
-        const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost.posts.lenght > 10) {
-          navigateToSubscription();
-          return "";
-        }
-        if (contadorDePost === null || contadorDePost.posts.length <= 10) {
-          navigateToCreatePost();
-          return "";
-        }
-      }
-      //validar si es elite
-      else if (
-        respuestaDeLaSubscription.subscriptions[0].type_subscription ===
-        "elite plus"
-      ) {
-        const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost.posts.lenght > 20) {
-          navigateToSubscription();
-          return "";
-        }
-        if (contadorDePost === null ||contadorDePost.posts.length <= 20) {
-          navigateToCreatePost();
-          return "";
+        //validar si es elite
+        else if (
+          respuestaDeLaSubscription.subscriptions[0].type_subscription ===
+          "elite plus"
+        ) {
+          const contadorDePost = await findAllPostUser(dataStorage._id);
+          if (contadorDePost.posts.lenght > 20) {
+            navigateToSubscription();
+            return "";
+          }
+          if (contadorDePost === null || contadorDePost.posts.length <= 20) {
+            navigateToCreatePost();
+            return "";
+          }
         }
       }
 
@@ -332,8 +333,6 @@ const ButtonRounded = ({
     const checkUserStatus = async () => {
       // Obtén la información del usuario
       await getUserInfoFunc();
-
-  
     };
 
     checkUserStatus();
@@ -360,7 +359,7 @@ const ButtonRounded = ({
           try {
             await getUserData();
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         }}
       >
