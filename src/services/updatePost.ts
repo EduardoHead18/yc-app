@@ -1,6 +1,6 @@
-const url = "http://localhost:8080/api/v1/post/";
+// const url = "http://localhost:8080/api/v1/post/";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/post/";
 
-// const url:string = 'https://your-confort-backend.onrender.com/api/v1/user'
 export const updatePostApi = async (data: object, id:string) => {
 console.log(id)
   try {

@@ -15,6 +15,7 @@ import { BeforePostScreen } from "../screens/BeforePostScreen";
 import { UpdateAccount } from "../screens/UpdateAccount";
 import { AccountScreen } from "../screens/AccountScreen";
 import { UpdatePost } from "../screens/UpdatePost";
+import TermsAndConditions from "../screens/TermsAndConditions";
 
 const Stack = createStackNavigator();
 
@@ -97,6 +98,11 @@ export function MyStackTwo() {
         <Stack.Screen
           name="updatePost"
           component={UpdatePost}
+          options={{ gestureEnabled: true, animationEnabled: true }}
+        />
+        <Stack.Screen
+          name="termsAndConditions"
+          component={TermsAndConditions}
           options={{ gestureEnabled: true, animationEnabled: true }}
         />
       </Stack.Navigator>

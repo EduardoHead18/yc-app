@@ -7,7 +7,8 @@ export default function CheckoutScreen() {
   const [loading, setLoading] = useState(false);
 
   const fetchPaymentSheetParams = async () => {
-    const response = await fetch(`http://localhost:8080/api/v1/payment-sheet`, {
+
+    const response = await fetch(`https://your-confort-backend.onrender.com/api/v1/payment-sheet`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

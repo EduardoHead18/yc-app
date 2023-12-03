@@ -15,7 +15,7 @@ export const SettingScreen = () => {
 
 
   // navigation
-  const {navigateToSubscription, navigateToAccountScreen, navigateToLoginGoogle}  = useStackNavigation()
+  const {navigateToSubscription, navigateToAccountScreen, navigateToLoginGoogle, navigateToTermsAndConditios}  = useStackNavigation()
 
 
 
@@ -63,7 +63,7 @@ export const SettingScreen = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        <TouchableOpacity onPress={()=>navigateToTermsAndConditios()}
           style={styles.containersButton}
         >
           <AntDesign name="exclamation" size={27} color={allColors.backgorunGreen} />

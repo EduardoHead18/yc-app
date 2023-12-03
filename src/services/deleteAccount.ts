@@ -1,4 +1,6 @@
-const url: string = 'http://localhost:8080/api/v1/post/'
+// const url: string = 'http://localhost:8080/api/v1/post/'
+const url: string = "https://your-confort-backend.onrender.com/api/v1/post";
+
 export const deletePostApi =async(postId:string)=>{
     try {
         const response = await fetch(`${url}${postId}`, {

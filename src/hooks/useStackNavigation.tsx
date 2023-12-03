@@ -19,6 +19,7 @@ type StackParamList = {
   updateAccount: undefined;
   accountScreen: undefined;
   updatePost: {postId: any};
+  termsAndConditions: undefined;
 };
 
 type NavigationProps = StackNavigationProp<StackParamList>;
@@ -57,7 +58,7 @@ export const useStackNavigation = () => {
   const navigateToUpdateAccount= () => navigation.navigate("updateAccount");
   const navigateToAccountScreen= () => navigation.navigate("accountScreen");
   const navigateToUpdatePost= (postId:any) => navigation.navigate("updatePost",{postId});
-
+  const navigateToTermsAndConditios= () => navigation.navigate("termsAndConditions");
 
   return {
     navigateToCreateAccount,
@@ -76,6 +77,7 @@ export const useStackNavigation = () => {
     navigateToBeforePostScreen,
     navigateToUpdateAccount,
     navigateToAccountScreen,
-    navigateToUpdatePost
+    navigateToUpdatePost,
+    navigateToTermsAndConditios
   };
 };

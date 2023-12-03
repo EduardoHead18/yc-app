@@ -1,5 +1,6 @@
-const url = "http://localhost:8080/api/v1/user";
-// const url:string = 'https://your-confort-backend.onrender.com/api/v1/user'
+//const url = "http://localhost:8080/api/v1/user";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/user";
+
 export const createUser = async (data: object) => {
   console.log("from createUser", data);
   try {

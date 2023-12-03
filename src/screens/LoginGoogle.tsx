@@ -214,13 +214,12 @@ export const LoginGoogle = () => {
             onSubmit={async (values) => {
               setIsLoading(true);
               const response = await userLogin(values.email, values.password);
-
-              if (
-                response &&
-                response.message === "successful authentication"
-              ) {
-                const findEmailResponse = await fetch(`http://localhost:8080/api/v1/user/email/${values.email}`)
+              console.log('aaaaaa', response.dataUser)
+              if (response.dataUser) {
+                console.log('entro aqui')
+                const findEmailResponse = await fetch(`https://your-confort-backend.onrender.com/api/v1/user/email/${values.email}`)
                 const dataJson = await findEmailResponse.json()
+                console.log('datajson', dataJson)
                 SaveTokenInStorage(dataJson);
                 //limpiar campos del input
                 resetForm(); // Limpiar los campos de entrada

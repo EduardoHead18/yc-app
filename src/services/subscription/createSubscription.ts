@@ -1,5 +1,5 @@
-const url: string = "http://localhost:8080/api/v1/subscription";
-// const url:string = 'https://your-confort-backend.onrender.com/api/v1/post'
+//const url: string = "http://localhost:8080/api/v1/subscription";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/subscription";
 
 export const createSubscriptionApi = async (data:any) => {
   try {

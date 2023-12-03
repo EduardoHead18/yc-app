@@ -1,4 +1,6 @@
-const url: string = "http://localhost:8080/api/v1/user_subscription/";
+//const url: string = "http://localhost:8080/api/v1/user_subscription/";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/user_subscription/";
+
 export const findOneSubscription = async (idUser: string) => {
     console.log('userid: ' + idUser);
   try {

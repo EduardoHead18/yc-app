@@ -13,7 +13,6 @@ import { useContext, useEffect, useState } from "react";
 import { ICreateAccount } from "../interfaces/interfaceCreateAccount";
 import {
   validateAge,
-  validateEmail,
   validateLastName,
   validateName,
   validatePassword,
@@ -46,6 +45,7 @@ export const UpdateAccount = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [infoStorage, setInfoStorage] = useState<IUserData | any>();
+  const [userDataApi, setUserDataApi] = useState<IUserData | any>();
 
   //context
 
@@ -56,7 +56,6 @@ export const UpdateAccount = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const updateUserFunc = async (data: object) => {
-    console.log("here");
     const response = await updateAccountApi(data, dataUser._id);
     console.log("update user success", response);
     //search usuer
@@ -68,6 +67,7 @@ export const UpdateAccount = () => {
       setIsModalOpen(true);
       console.log("isModalOpen:", isModalOpen);
       setIsLoading(false);
+      console.log('new user',newUser)
       //me quede en que aun no guarda bien
       const newStorage = await SaveTokenInStorage(newUser);
       setInfoStorage(newStorage);
@@ -84,18 +84,34 @@ export const UpdateAccount = () => {
   const myContext = useContext(MyContext);
   const dataUser = myContext?.dataUser;
 
-  const initialValues: IUserData = {
-    name: dataUser?.name || "", // Accede a la propiedad 'name' si está definida
-    lastName: dataUser?.lastName || "", // Accede a la propiedad 'last
-    city: dataUser?.city || "", // Accede a la prop
-    state: dataUser?.state || "", // Accede
-    postalCode: dataUser?.postalCode || "", // Accede
-    age: dataUser?.age || "", //
-    phone: dataUser?.phone || "",
+  const getInfoStorage = async () => {
+    try {
+      const info = await getUserInfo();
+      console.log('el aidi', info._id);
+
+      const response = await findOneUser(info._id);
+     console.log(' la respuesta de la ap',response)
+     setUserDataApi(response)
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getInfoStorage();
+  }, []);
+
+  const initialValues = {
+    name: dataUser?.name || "",
+    lastName: dataUser?.lastName || '',
+    city: dataUser?.city || '',
+    state: dataUser?.state ||  "",
+    postalCode: dataUser?.postalCode || "",
+    age: dataUser?.age ||"",
+    phone:dataUser?.phone || "",
     password: "",
   };
-
-
+ 
 
   return (
     <View style={styles.container}>
@@ -159,7 +175,7 @@ export const UpdateAccount = () => {
                       if (validatePhone(values.phone.toString()))
                         errors.phone = validatePhone(values.phone.toString());
                     }
-               
+
                     if (values.password.trim() !== "") {
                       if (validatePassword(values.password.toString()))
                         errors.password = validatePassword(
@@ -175,12 +191,13 @@ export const UpdateAccount = () => {
                     //validate if there are no errors in the forms
                     if (Object.keys(formErrors).length !== 0) {
                     }
+
                     const data = {
                       ...values,
                     };
                     setIsLoading(true);
                     //send user data
-                    updateUserFunc(data);
+                    updateUserFunc(data);``
                   }}
                 >
                   {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -328,7 +345,7 @@ const formsProps = [
   {
     id: 7,
     name: "phone",
-    visibleText: "Telefono",
+    visibleText: "Teléfono",
     keyboardType: "number-pad",
     secureTextEntry: false,
     limit: 10,

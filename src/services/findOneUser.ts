@@ -1,4 +1,6 @@
-const url: string = 'http://localhost:8080/api/v1/user/'
+// const url: string = 'http://localhost:8080/api/v1/user/'
+const url: string = "https://your-confort-backend.onrender.com/api/v1/user/";
+
 
 export const findOneUser = async (id:string) => {
     console.log('el id: ' + id)

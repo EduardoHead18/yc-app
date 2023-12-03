@@ -1,4 +1,6 @@
-const url: string = "http://localhost:8080/api/v1/post/user/";
+// const url: string = "http://localhost:8080/api/v1/post/user/";
+const url: string = "https://your-confort-backend.onrender.com/api/v1/user/";
+
 
 export const findpostByID = async (id: string) => {
   try {

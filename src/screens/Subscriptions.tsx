@@ -36,10 +36,12 @@ export const Subscriptions = () => {
     setStorageData(response);
   };
 
+
+
   const getStripeData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/payment/subscriptions"
+        "https://your-confort-backend.onrender.com/api/v1/payment/subscriptions"
       );
       const responseJson = await response.json();
       setProductData(responseJson);
