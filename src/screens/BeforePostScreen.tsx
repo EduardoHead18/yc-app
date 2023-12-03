@@ -6,6 +6,7 @@ import {
   StatusBar,
   FlatList,
   Alert,
+  Platform,
 } from "react-native";
 import { windowHeight, windowWidth } from "../utils/dimensions";
 import { allColors } from "../utils/colors";
@@ -213,9 +214,10 @@ export const BeforePostScreen = () => {
         </View>
       ) : (
         // Renderizar la información cuando hay elementos en infoPost
+        
         <View
           style={{
-            marginTop: windowHeight * 0.07,
+            marginTop: Platform.OS === 'ios'? windowHeight * 0.07: windowHeight * 0.02,
             paddingHorizontal: 10,
             flex: 1,
           }}

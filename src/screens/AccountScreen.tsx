@@ -9,6 +9,7 @@ import { findOneSubscription } from "../services/subscription/findOneSuscription
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useStackNavigation } from "../hooks/useStackNavigation";
 import { ModalComponent } from "../components/global/Modal";
+import { Platform } from "react-native";
 
 export const AccountScreen = () => {
   const [userStorage, setUserStorages] = useState<any>();
@@ -37,7 +38,7 @@ export const AccountScreen = () => {
     dataUser();
   }, []);
   return (
-    <View style={{ marginTop: windowHeight * 0.09, paddingHorizontal: 10 }}>
+    <View style={{ marginTop: Platform.OS === 'ios'? windowHeight * 0.07: windowHeight * 0.02, paddingHorizontal: 10 }}>
       <ButtonPrimaryComponent
         text={"< Atras"}
         onPress={() => navigation.goBack()}

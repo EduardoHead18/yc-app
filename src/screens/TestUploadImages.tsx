@@ -25,6 +25,7 @@ import { Formik } from "formik";
 import { getUserInfo } from "../utils/getUserInfo";
 import { useNavigation } from "@react-navigation/native";
 import { SpinnerComponet } from "../components/global/SpinnerComponent";
+import { Platform } from "react-native";
 
 const cld = new Cloudinary({
   cloud: {
@@ -144,7 +145,7 @@ export const TestUploadImages = () => {
         backgroundColor: allColors.whiteColor,
       }}
     >
-      <View style={{ marginTop: windowHeight * 0.09 }}>
+      <View style={{  marginTop: Platform.OS === 'ios'? windowHeight * 0.07: windowHeight * 0.02, }}>
         <ButtonPrimaryComponent
           text="< Atras"
           onPress={() => navigation.goBack()}

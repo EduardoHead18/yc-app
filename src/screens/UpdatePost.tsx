@@ -27,6 +27,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { updatePostApi } from "../services/updatePost";
 import { CLOUD_NAME } from "@env";
+import { Platform } from "react-native";
 
 const cld = new Cloudinary({
   cloud: {
@@ -156,7 +157,7 @@ export const UpdatePost = ({ route }: any) => {
           backgroundColor: allColors.whiteColor,
         }}
       >
-        <View style={{ marginTop: windowHeight * 0.09 }}>
+        <View style={{  marginTop: Platform.OS === 'ios'? windowHeight * 0.07: windowHeight * 0.02, }}>
           <ButtonPrimaryComponent
             text="< Atras"
             onPress={() => navigation.goBack()}

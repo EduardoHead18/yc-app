@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { findOnePost } from "../services/findOnePost";
 import { allColors } from "../utils/colors";
@@ -17,6 +18,8 @@ import Geocoder from "react-native-geocoding";
 import { GOOGLE_MAPS_KEY } from "@env";
 import * as Linking from "expo-linking";
 import { getUserInfo } from "../utils/getUserInfo";
+
+
 
 interface ILocationData {
   latitude: number;
@@ -79,6 +82,7 @@ export const ShowCards = ({ route }: any) => {
   };
 
   useEffect(() => {
+    
     findPost();
     searchLocation();
     
@@ -101,7 +105,7 @@ export const ShowCards = ({ route }: any) => {
           paddingHorizontal: 9,
         }}
       >
-        <View style={{ marginTop: windowHeight * 0.09 }}>
+        <View style={{  marginTop: Platform.OS === 'ios' ? windowHeight * 0.07 : 0, }}>
           <ButtonPrimaryComponent
             text="< Atras"
             onPress={() => navigation.goBack()}
