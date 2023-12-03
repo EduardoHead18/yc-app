@@ -26,6 +26,7 @@ import { getUserInfo } from "../utils/getUserInfo";
 import { useNavigation } from "@react-navigation/native";
 import { SpinnerComponet } from "../components/global/SpinnerComponent";
 import { Platform } from "react-native";
+ImagePicker.PermissionStatus
 
 const cld = new Cloudinary({
   cloud: {
@@ -58,6 +59,8 @@ export const TestUploadImages = () => {
   const [showError, setShowError] = useState<boolean>(false);
   const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+ 
 
   //navigation
   const navigation = useNavigation();

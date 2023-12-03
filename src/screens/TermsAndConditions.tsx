@@ -1,22 +1,27 @@
 import * as React from "react";
-import { Image, StyleSheet, View, Text, Pressable } from "react-native";
+import { Image, StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
+import { useNavigation } from "@react-navigation/native";
+
+
 
 const TermsAndConditions = () => {
+
+  const navigation = useNavigation();
   return (
     <View style={styles.terminosYCondiciones1}>
       <Image
         style={styles.mesaDeTrabajo14xf11}
         resizeMode="cover"
-        source={require("../../assets/backgroundBlue.png")}
+        source={require("../../assets/fondo.png")}
       />
       <Pressable style={styles.component2} onPress={() => {}}>
         <View style={[styles.component2Child, styles.childShadowBox]} />
-        <Text style={[styles.crearCuenta, styles.crearTypo]}>Aceptar</Text>
+        <TouchableOpacity style={[styles.crearCuenta,{flex:1, justifyContent:'center', alignItems:'center'} ]}><Text>Aceptar</Text></TouchableOpacity>
       </Pressable>
       <Pressable style={styles.component3} onPress={() => {}}>
         <View style={[styles.component3Child, styles.childShadowBox]} />
-        <Text style={[styles.crearCuenta1, styles.crearTypo]}>Cancelar</Text>
+        <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.crearCuenta1,{flex:1, justifyContent:'center', alignItems:'center'} ]}><Text >Cancelar</Text></TouchableOpacity>
       </Pressable>
       <Text style={[styles.enNuestraAplicacin1, styles.bienvenidoALa1Typo]}>
         En nuestra aplicación, nos comprometemos a proteger sus datos
@@ -28,7 +33,7 @@ const TermsAndConditions = () => {
       <Image
         style={[styles.recurso104x11, styles.recurso104x11Position]}
         resizeMode="cover"
-        source={require("../../assets/logoBlue.png")}
+        source={require("../../assets/logo.png")}
       />
       <Text style={[styles.avisoDePrivacidad1, styles.avisoDePrivacidad1Typo]}>
         Aviso de privacidad

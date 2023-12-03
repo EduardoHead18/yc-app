@@ -10,6 +10,9 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useStackNavigation } from "../hooks/useStackNavigation";
 import { ModalComponent } from "../components/global/Modal";
 import { Platform } from "react-native";
+import { Alert } from "react-native";
+import { deleteStorage } from "../utils/saveTokenInStorage";
+import { deleteUserAccount } from "../services/deleteUserAccount";
 
 export const AccountScreen = () => {
   const [userStorage, setUserStorages] = useState<any>();
@@ -22,6 +25,8 @@ export const AccountScreen = () => {
   const modalRedirect = () => {
     navigation.goBack();
   };
+  const { navigateToLoginGoogle}  = useStackNavigation()
+
 
   useEffect(() => {
     const dataUser = async () => {
@@ -31,8 +36,9 @@ export const AccountScreen = () => {
 
       if (dataUser && dataUser._id) {
         const response = await findOneSubscription(dataUser._id);
-        console.log("Subscription data", response.subscriptions[0]);
-        setDataSubscription(response.subscriptions[0]);
+        if (response && response.subscriptions && response.subscriptions.length > 0) {
+          setDataSubscription(response.subscriptions[0]);
+        }
       }
     };
     dataUser();
@@ -89,6 +95,44 @@ export const AccountScreen = () => {
           <Text>Edad: {userStorage?.age}</Text>
           <Text>email: {userStorage?.email}</Text>
           <Text>Telefono: {userStorage?.phone}</Text>
+
+          <TouchableOpacity
+          style={{
+            backgroundColor: "#F05454",
+            padding: 10,
+            marginTop: windowHeight * 0.02,
+            borderRadius: 100,
+          }}
+        onPress={() => {
+
+          Alert.alert(
+            "Eliminar cuenta",
+            "¿Estás seguro de que quieres eliminar tu cuenta? ",
+            [
+              {
+                text: "Cancelar",
+                style: "cancel",
+              },
+              {
+                text: "Continuar",
+                onPress: async() => {
+                  try {
+                    console.log(' el id del storage', userStorage._id)
+                    await deleteUserAccount(userStorage._id);
+                     await deleteStorage()
+                     navigateToLoginGoogle()
+                  } catch (error) {
+                    console.error('Error deleting user account:', error);
+                  }
+                }
+              },
+            ],
+            { cancelable: false }
+          );
+        }}
+            >
+              <Text style={{ textAlign: "center" }}>Eliminar cuenta</Text>
+            </TouchableOpacity>
         </View>
 
         <View
@@ -136,9 +180,28 @@ export const AccountScreen = () => {
 
           {dataSubscription?.active ? (
             <TouchableOpacity
-              onPress={() => {
-                setIsModalOpen(true);
-              }}
+            onPress={() => {
+
+              Alert.alert(
+                "Cancelar suscripción",
+                "¿Estás seguro de que quieres cancelar tu suscripción?, aún podrás disfrutar de los beneficios hasta que tu suscripción termine. ",
+                [
+                  {
+                    text: "Cancelar",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Continuar",
+                    onPress: async() => {
+                      // await deleteStorage()
+                      navigation.goBack()
+                    }
+                  },
+                ],
+                { cancelable: false }
+              );
+            }}
+           
               style={{
                 backgroundColor: "#F05454",
                 padding: 10,

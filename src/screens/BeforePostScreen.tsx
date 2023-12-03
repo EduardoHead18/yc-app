@@ -279,12 +279,12 @@ const ButtonRounded = ({
         "avanzado"
       ) {
         const contadorDePost = await findAllPostUser(dataStorage._id);
-        if (contadorDePost.length && contadorDePost.posts) {
-          if (contadorDePost.posts.length > 5) {
+        if (contadorDePost && contadorDePost.posts) {
+          if (contadorDePost && contadorDePost.posts && contadorDePost.posts.length >= 5) {
             navigateToSubscription();
             return "";
           }
-          if (contadorDePost === null || contadorDePost.posts.lenght <= 5) {
+          if (!contadorDePost || !contadorDePost.posts || contadorDePost.posts.length <= 5) {
             navigateToCreatePost();
             return "";
           }
@@ -295,11 +295,11 @@ const ButtonRounded = ({
           "premium"
         ) {
           const contadorDePost = await findAllPostUser(dataStorage._id);
-          if (contadorDePost.posts.lenght > 10) {
+          if (contadorDePost && contadorDePost.posts && contadorDePost.posts.length >= 10) {
             navigateToSubscription();
             return "";
           }
-          if (contadorDePost === null || contadorDePost.posts.length <= 10) {
+          if (!contadorDePost || !contadorDePost.posts || contadorDePost.posts.length <= 10) {
             navigateToCreatePost();
             return "";
           }
@@ -310,11 +310,11 @@ const ButtonRounded = ({
           "elite plus"
         ) {
           const contadorDePost = await findAllPostUser(dataStorage._id);
-          if (contadorDePost.posts.lenght > 20) {
+          if (contadorDePost && contadorDePost.posts && contadorDePost.posts.length >= 20) {
             navigateToSubscription();
             return "";
           }
-          if (contadorDePost === null || contadorDePost.posts.length <= 20) {
+          if (!contadorDePost || !contadorDePost.posts || contadorDePost.posts.length <= 20) {
             navigateToCreatePost();
             return "";
           }

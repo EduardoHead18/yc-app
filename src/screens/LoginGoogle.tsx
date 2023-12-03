@@ -214,8 +214,8 @@ export const LoginGoogle = () => {
             onSubmit={async (values) => {
               setIsLoading(true);
               const response = await userLogin(values.email, values.password);
-              console.log('aaaaaa', response.dataUser)
-              if (response.dataUser) {
+              console.log('aaaaaa', response)
+              if (response && response.dataUser) {
                 console.log('entro aqui')
                 const findEmailResponse = await fetch(`https://your-confort-backend.onrender.com/api/v1/user/email/${values.email}`)
                 const dataJson = await findEmailResponse.json()
@@ -229,7 +229,7 @@ export const LoginGoogle = () => {
                 setFormErrors("Error en el email o contraseña");
                 setTimeout(() => setFormErrors(""), 2000);
 
-                setIsLoading(false);
+               
                 return null;
               }
               setIsLoading(false);
@@ -275,7 +275,7 @@ export const LoginGoogle = () => {
                   text={"Iniciar sesión"}
                   onPress={() => handleSubmit()}
                 />
-
+{/* 
                 <TouchableOpacity
                   style={styles.button2}
                   onPress={() => handleGoogleSignIn()}
@@ -288,7 +288,7 @@ export const LoginGoogle = () => {
                     source={require("../../assets/images/login/googleIcon.png")}
                   ></Image>
                   <Text style={styles.text2}>Iniciar con Google</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <Text
                   style={{
