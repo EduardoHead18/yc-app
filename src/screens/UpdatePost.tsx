@@ -27,7 +27,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { updatePostApi } from "../services/updatePost";
 import { CLOUD_NAME } from "@env";
-import { Platform } from "react-native";
+import { Platform, KeyboardAvoidingView } from "react-native";
 
 const cld = new Cloudinary({
   cloud: {
@@ -150,6 +150,10 @@ export const UpdatePost = ({ route }: any) => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+       <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
       <View
         style={{
           flex: 1,
@@ -166,18 +170,24 @@ export const UpdatePost = ({ route }: any) => {
         <View
           style={{
             flex: 1,
+        
             alignItems: "center",
             backgroundColor: allColors.backgroundGreenCards,
             marginTop: windowHeight * 0.02,
             borderRadius: 20,
           }}
         >
+   
+  
           {imageUris && imageUris.length > 0 ? (
             <FlatList
-              horizontal
               data={imageUris}
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
+                <TouchableOpacity
+    
+                onPress={handleImagePicker}
+              >
                 <Image
                   source={{ uri: item }}
                   style={{
@@ -191,7 +201,9 @@ export const UpdatePost = ({ route }: any) => {
                     marginTop: windowHeight * 0.09,
                   }}
                 />
+                </TouchableOpacity>
               )}
+              horizontal={true}
             />
           ) : (
             <TouchableOpacity
@@ -207,7 +219,9 @@ export const UpdatePost = ({ route }: any) => {
               }}
               onPress={handleImagePicker}
             >
+              
               {data ? (
+                <TouchableOpacity onPress={handleImagePicker}>
                 <FlatList
                   data={data.url}
                   keyExtractor={(item, index) => index.toString()}
@@ -232,6 +246,9 @@ export const UpdatePost = ({ route }: any) => {
                     );
                   }}
                 />
+                      </TouchableOpacity>
+
+             
               ) : (
                 <AntDesign
                   style={styles.iconPlus}
@@ -328,7 +345,7 @@ export const UpdatePost = ({ route }: any) => {
                       maxLength={100}
                       autoCapitalize="none"
                     />
-                    <Text style={{ fontSize: 17 }}>Descripcion</Text>
+                    <Text style={{ fontSize: 17 }}>Descripción</Text>
                     <TextInput
                       onChangeText={handleChange("description")}
                       onBlur={handleBlur("description")}
@@ -376,11 +393,16 @@ export const UpdatePost = ({ route }: any) => {
                 );
               }}
             </Formik>
+           
           ) : (
             ""
           )}
+        
         </View>
       </View>
+      
+      </KeyboardAvoidingView>
+     
     </TouchableWithoutFeedback>
   );
 };

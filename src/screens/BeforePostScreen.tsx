@@ -60,7 +60,8 @@ export const BeforePostScreen = () => {
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
-      await getPostIfTheyExist();
+     await getPostIfTheyExist();
+      
       setRefreshing(false);
     } catch (error) {
       console.log("error", error);
@@ -68,8 +69,8 @@ export const BeforePostScreen = () => {
   };
 
   //eliminar publicacion
-  const deletePostFunc = async () => {
-    await deletePostApi(infoPost[0]._id);
+  const deletePostFunc = async (item:string) => {
+    await deletePostApi(item);
     //console.log("del yeison", response);
   };
 
@@ -158,7 +159,7 @@ export const BeforePostScreen = () => {
                   },
                   {
                     text: "Eliminar",
-                    onPress: () => deletePostFunc(),
+                    onPress: () => deletePostFunc(item._id),
                   },
                 ],
                 { cancelable: false }

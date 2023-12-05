@@ -17,10 +17,10 @@ const TermsAndConditions = () => {
       />
       <Pressable style={styles.component2} onPress={() => {}}>
         <View style={[styles.component2Child, styles.childShadowBox]} />
-        <TouchableOpacity style={[styles.crearCuenta,{flex:1, justifyContent:'center', alignItems:'center'} ]}><Text>Aceptar</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.crearCuenta,{flex:1, justifyContent:'center', alignItems:'center'} ]}><Text>Aceptar</Text></TouchableOpacity>
       </Pressable>
       <Pressable style={styles.component3} onPress={() => {}}>
-        <View style={[styles.component3Child, styles.childShadowBox]} />
+        <View  style={[styles.component3Child, styles.childShadowBox]} />
         <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.crearCuenta1,{flex:1, justifyContent:'center', alignItems:'center'} ]}><Text >Cancelar</Text></TouchableOpacity>
       </Pressable>
       <Text style={[styles.enNuestraAplicacin1, styles.bienvenidoALa1Typo]}>
