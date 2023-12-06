@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
       			height: 4
     		},
     		shadowColor: "rgba(0, 0, 0, 0.25)",
-    		borderRadius: 30,
+    		borderRadius: 31,
     		left: "0%",
     		bottom: "0%",
     		right: "0%",
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     		color: "#000",
     		fontFamily: "Inter-Regular",
     		fontSize: 15,
-    		textAlign: "rigth"
+    		textAlign: "left"
   	},
   	recurso104x11Position: {
     		width: 307,
